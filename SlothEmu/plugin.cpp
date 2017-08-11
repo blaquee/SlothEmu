@@ -25,6 +25,10 @@ const char* ReadSelection(int hWindow)
     SELECTIONDATA sel;
     GuiSelectionGet(hWindow, &sel);
     duint lenSelection = sel.end - sel.start + 1;
+    unsigned char* data = new unsigned char[len];
+
+    // Read the memory data
+
     return 0;
 }
 static void Adler32Menu(int hWindow)
