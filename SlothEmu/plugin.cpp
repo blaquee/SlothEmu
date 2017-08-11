@@ -1,23 +1,31 @@
 #include "plugin.h"
+#include "emu.h"
+#include "unicorn\unicorn.h"
+
+
+extern bool g_EngineInit;
 
 enum
 {
     MENU_TEST,
-    MENU_DISASM_ADLER32,
-    MENU_DUMP_ADLER32,
-    MENU_STACK_ADLER32
+    MENU_DISASM_ADLER32
 };
 
-static bool ReadSelection(int hWindow)
+
+
+const char* ReadSelection(int hWindow)
 {
     if(!DbgIsDebugging())
     {
         _plugin_logputs("[" PLUGIN_NAME "] Not Debugging");
-        return false;
+        return 0;
     }
 
     //Get the Selection Data
-
+    SELECTIONDATA sel;
+    GuiSelectionGet(hWindow, &sel);
+    duint lenSelection = sel.end - sel.start + 1;
+    return 0;
 }
 static void Adler32Menu(int hWindow)
 {
@@ -97,14 +105,6 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
         Adler32Menu(GUI_DISASSEMBLY);
         break;
 
-    case MENU_DUMP_ADLER32:
-        Adler32Menu(GUI_DUMP);
-        break;
-
-    case MENU_STACK_ADLER32:
-        Adler32Menu(GUI_STACK);
-        break;
-
     default:
         break;
     }
@@ -138,6 +138,6 @@ void pluginSetup()
 {
     _plugin_menuaddentry(hMenu, MENU_TEST, "&Menu Test");
     _plugin_menuaddentry(hMenuDisasm, MENU_DISASM_ADLER32, "&Adler32 Selection");
-    _plugin_menuaddentry(hMenuDump, MENU_DUMP_ADLER32, "&Adler32 Selection");
-    _plugin_menuaddentry(hMenuStack, MENU_STACK_ADLER32, "&Adler32 Selection");
+    //_plugin_menuaddentry(hMenuDump, MENU_DUMP_ADLER32, "&Adler32 Selection");
+    //_plugin_menuaddentry(hMenuStack, MENU_STACK_ADLER32, "&Adler32 Selection");
 }

@@ -42,6 +42,9 @@
     <Filter Include="Library Files">
       <UniqueIdentifier>{83b94fba-0963-43a4-b8bd-12730a208fad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\unicorn">
+      <UniqueIdentifier>{7cb199ac-c07e-4ce6-84b8-a7db86d2ee1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pluginsdk\capstone\arm.h">
@@ -281,6 +284,21 @@
     <ClInclude Include="pluginmain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\inc\unicorn\arm64.h">
+      <Filter>Header Files\unicorn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\inc\unicorn\unicorn.h">
+      <Filter>Header Files\unicorn</Filter>
+    </ClInclude>
+    <ClInclude Include="..\inc\unicorn\x86.h">
+      <Filter>Header Files\unicorn</Filter>
+    </ClInclude>
+    <ClInclude Include="emu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="pluginsdk\x32bridge.lib">
@@ -343,6 +361,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pluginmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="emu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
