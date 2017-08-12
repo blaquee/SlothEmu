@@ -13,22 +13,28 @@ enum
 
 
 
-const char* ReadSelection(int hWindow)
+bool ReadSelection(int hWindow)
 {
     if(!DbgIsDebugging())
     {
         _plugin_logputs("[" PLUGIN_NAME "] Not Debugging");
-        return 0;
+        return false;
     }
 
     //Get the Selection Data
     SELECTIONDATA sel;
     GuiSelectionGet(hWindow, &sel);
     duint lenSelection = sel.end - sel.start + 1;
-    unsigned char* data = new unsigned char[len];
+    unsigned char* data = new unsigned char[lenSelection];
 
     // Read the memory data
+    if(DbgMemRead(sel.start, data, lenSelection))
+    {
+        if(data)
+        {
 
+        }
+    }
     return 0;
 }
 static void Adler32Menu(int hWindow)
