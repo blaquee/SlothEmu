@@ -45,6 +45,9 @@
     <Filter Include="Header Files\unicorn">
       <UniqueIdentifier>{7cb199ac-c07e-4ce6-84b8-a7db86d2ee1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\capstone_wrapper">
+      <UniqueIdentifier>{e2ba667b-d4d8-4b99-bf8a-61722ba1b7fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pluginsdk\capstone\arm.h">
@@ -299,6 +302,9 @@
     <ClInclude Include="defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inc\capstone_wrapper\capstone_wrapper.h">
+      <Filter>Header Files\capstone_wrapper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="pluginsdk\x32bridge.lib">
@@ -365,6 +371,9 @@
     </ClCompile>
     <ClCompile Include="emu.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inc\capstone_wrapper\capstone_wrapper.cpp">
+      <Filter>Header Files\capstone_wrapper</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@
 
 
 extern bool g_EngineInit;
+extern uc_engine* g_engine;
 
 enum
 {
@@ -32,10 +33,18 @@ bool ReadSelection(int hWindow)
     {
         if(data)
         {
-
+			// if emulator is active, pass data to be emulated
+			if (g_EngineInit && g_engine)
+			{
+				if (!PrepareDataToEmulate(data, lenSelection, sel.start, false))
+				{
+					_plugin_logputs("Failed to emulate the data");
+					return false;
+				}
+			}
         }
     }
-    return 0;
+	return true;
 }
 static void Adler32Menu(int hWindow)
 {
@@ -112,7 +121,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
         break;
 
     case MENU_DISASM_ADLER32:
-        Adler32Menu(GUI_DISASSEMBLY);
+        ReadSelection(GUI_DISASSEMBLY);
         break;
 
     default:
@@ -128,7 +137,11 @@ bool pluginInit(PLUG_INITSTRUCT* initStruct)
 
     if(!_plugin_registerexprfunction(pluginHandle, PLUGIN_NAME ".zero", 0, exprZero, nullptr))
         _plugin_logputs("[" PLUGIN_NAME "] Error registering the \"" PLUGIN_NAME ".zero\" expression function!");
-
+	if (!InitEmuEngine())
+	{
+		_plugin_logputs("Emulation Engine failed to start, failing plugin load");
+		return false;
+	}
     return true; //Return false to cancel loading the plugin.
 }
 

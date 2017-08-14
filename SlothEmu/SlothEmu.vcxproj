@@ -71,18 +71,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.dp32</TargetExt>
     <OutDir>$(SolutionDir)bin\x32\</OutDir>
+    <IncludePath>$(ProjectDir)inc\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetExt>.dp32</TargetExt>
     <OutDir>$(SolutionDir)bin\x32d\</OutDir>
+    <IncludePath>$(ProjectDir)inc\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.dp64</TargetExt>
     <OutDir>$(SolutionDir)bin\x64\</OutDir>
+    <IncludePath>$(ProjectDir)inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetExt>.dp64</TargetExt>
     <OutDir>$(SolutionDir)bin\x64d\</OutDir>
+    <IncludePath>$(ProjectDir)inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -92,7 +96,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -113,7 +118,7 @@
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -138,6 +143,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>$(SolutionDir)libs\x64\unicorn.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -158,10 +164,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalDependencies>$(SolutionDir)libs\x64\unicorn.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="emu.cpp" />
+    <ClCompile Include="inc\capstone_wrapper\capstone_wrapper.cpp" />
     <ClCompile Include="plugin.cpp" />
     <ClCompile Include="pluginmain.cpp" />
   </ItemGroup>
@@ -171,6 +179,7 @@
     <ClInclude Include="..\inc\unicorn\x86.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="emu.h" />
+    <ClInclude Include="inc\capstone_wrapper\capstone_wrapper.h" />
     <ClInclude Include="plugin.h" />
     <ClInclude Include="pluginmain.h" />
     <ClInclude Include="pluginsdk\bridgegraph.h" />
