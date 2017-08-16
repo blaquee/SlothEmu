@@ -42,36 +42,16 @@ bool ReadSelection(int hWindow)
 					return false;
 				}
 			}
+			else
+			{
+				_plugin_logputs("Emulator not initialized");
+				return false;
+			}
         }
     }
 	return true;
 }
-static void Adler32Menu(int hWindow)
-{
-    if(!DbgIsDebugging())
-    {
-        _plugin_logputs("[" PLUGIN_NAME "] You need to be debugging to use this command");
-        return;
-    }
-    SELECTIONDATA sel;
-    GuiSelectionGet(hWindow, &sel);
-    duint len = sel.end - sel.start + 1;
-    unsigned char* data = new unsigned char[len];
-    if(DbgMemRead(sel.start, data, len))
-    {
-        DWORD a = 1, b = 0;
-        for(duint index = 0; index < len; ++index)
-        {
-            a = (a + data[index]) % 65521;
-            b = (b + a) % 65521;
-        }
-        delete[] data;
-        DWORD checksum = (b << 16) | a;
-        _plugin_logprintf("[" PLUGIN_NAME "] Adler32 of %p[%X] is: %08X\n", sel.start, len, checksum);
-    }
-    else
-        _plugin_logputs("[" PLUGIN_NAME "] DbgMemRead failed...");
-}
+
 
 static bool cbTestCommand(int argc, char* argv[])
 {
@@ -82,11 +62,6 @@ static bool cbTestCommand(int argc, char* argv[])
     else
         _plugin_logprintf("[" PLUGIN_NAME "] Line: \"%s\"\n", line);
     return true;
-}
-
-static duint exprZero(int argc, duint* argv, void* userdata)
-{
-    return 0;
 }
 
 PLUG_EXPORT void CBINITDEBUG(CBTYPE cbType, PLUG_CB_INITDEBUG* info)
@@ -116,10 +91,6 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 {
     switch(info->hEntry)
     {
-    case MENU_TEST:
-        MessageBoxA(hwndDlg, "Test Menu Entry Clicked!", PLUGIN_NAME, MB_ICONINFORMATION);
-        break;
-
     case MENU_DISASM_ADLER32:
         ReadSelection(GUI_DISASSEMBLY);
         break;
@@ -135,8 +106,6 @@ bool pluginInit(PLUG_INITSTRUCT* initStruct)
     if(!_plugin_registercommand(pluginHandle, PLUGIN_NAME, cbTestCommand, false))
         _plugin_logputs("[" PLUGIN_NAME "] Error registering the \"" PLUGIN_NAME "\" command!");
 
-    if(!_plugin_registerexprfunction(pluginHandle, PLUGIN_NAME ".zero", 0, exprZero, nullptr))
-        _plugin_logputs("[" PLUGIN_NAME "] Error registering the \"" PLUGIN_NAME ".zero\" expression function!");
 	if (!InitEmuEngine())
 	{
 		_plugin_logputs("Emulation Engine failed to start, failing plugin load");
@@ -159,8 +128,8 @@ bool pluginStop()
 //Do GUI/Menu related things here.
 void pluginSetup()
 {
-    _plugin_menuaddentry(hMenu, MENU_TEST, "&Menu Test");
-    _plugin_menuaddentry(hMenuDisasm, MENU_DISASM_ADLER32, "&Adler32 Selection");
+    //_plugin_menuaddentry(hMenu, MENU_TEST, "&Menu Test");
+    _plugin_menuaddentry(hMenuDisasm, MENU_DISASM_ADLER32, "&Emulate Selection");
     //_plugin_menuaddentry(hMenuDump, MENU_DUMP_ADLER32, "&Adler32 Selection");
     //_plugin_menuaddentry(hMenuStack, MENU_STACK_ADLER32, "&Adler32 Selection");
 }

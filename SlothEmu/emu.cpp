@@ -30,8 +30,10 @@ bool InitEmuEngine()
 }
 
 
-bool PrepareDataToEmulate(void* data, size_t dataLen, duint start_addr, bool curCip = false)
+bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start_addr, bool curCip = false)
 {
+	_plugin_logprintf("About to start emulating address: %llx with %d bytes\n", start_addr, dataLen);
+
 	// disassemble and determine if code accesses any segments we need to setup or syscalls
 	if (!g_EngineInit || !g_engine)
 	{
@@ -40,7 +42,20 @@ bool PrepareDataToEmulate(void* data, size_t dataLen, duint start_addr, bool cur
 	}
 
 	//iterate through the stream of data and disassemble
-	for(size_t index = 0; index < dataLen;)
+	for (size_t index = 0; index < dataLen; )
+	{
+		if (!g_capstone.Disassemble(start_addr, data+index))
+		{
+			// try reading forward: DANGER
+			_plugin_logputs("Couldn't disassemble start of data, trying next byte..");
+			start_addr++;
+			index++;
+			continue;
+		}
+
+		//move to next instruction
+		index += g_capstone.Size();
+	}
 	g_capstone.Disassemble(start_addr, (const unsigned char*)data, dataLen);
 	if (g_capstone.Size() > 0)
 	{
