@@ -18,13 +18,30 @@ namespace engine
 		bool mGdtInit;
 		bool mFsSegInit;
 		bool mGsSegInit;
-		bool mLightEmu;
+		//bool mLightEmu;
 
 		std::vector<unsigned char> data;
+		std::vector<Capstone> cInstructions;
+
 
 	public:
-		EmuEngine::EmuEngine() {}
-		virtual ~EmuEngine();
+		EmuEngine::EmuEngine():
+		mEngineInit(false),
+		mStackInit(false),
+		mGdtInit(false),
+		mFsSegInit(false),
+		mGsSegInit(false)
+		{
+		}
+
+		~EmuEngine();
+
+		Capstone GetInstruction(unsigned int index);
+		bool AccessDescriptors();
+		bool EngineInit();
+		bool AccessSegments();
+		void AddDataToEmulate(unsigned char* data);
+
 	};
 
 }
@@ -39,7 +56,9 @@ enum STEPMODE
 };
 
 bool InitEmuEngine();
-bool SetupEnvironment(uc_engine* eng);
+bool SetupEnvironment(uc_engine* eng, duint threadID);
 bool SetupDescriptorTable(uc_engine* eng);
 bool SetupContext(uc_engine* eng);
-bool PrepareDataToEmulate(void* data, size_t dataLen, duint start_addr, bool curCip);
+bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start_addr, bool curCip);
+
+

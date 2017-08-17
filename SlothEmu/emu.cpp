@@ -44,7 +44,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 	//iterate through the stream of data and disassemble
 	for (size_t index = 0; index < dataLen; )
 	{
-		if (!g_capstone.Disassemble(start_addr, data+index))
+		if (!g_capstone.Disassemble(start_addr, data + index))
 		{
 			// try reading forward: DANGER
 			_plugin_logputs("Couldn't disassemble start of data, trying next byte..");
@@ -53,25 +53,39 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 			continue;
 		}
 
-		//move to next instruction
-		index += g_capstone.Size();
-	}
-	g_capstone.Disassemble(start_addr, (const unsigned char*)data, dataLen);
-	if (g_capstone.Size() > 0)
-	{
-		for (size_t i = 0; i < g_capstone.Size(); ++i)
+		if (g_capstone.Size() == 0)
 		{
-			// Determine if we might branch
-			if(g_capstone)
-			_plugin_logputs("No Call in data to emulate");
+			_plugin_logputs("Could not disassemble code");
+			return false;
 		}
+		//move to next instruction
+
+		_plugin_logprintf("Instruction: %llx %s\n", start_addr, g_capstone.InstructionText(false).c_str());
+
+		//Lets determine what needs to be prepared for the env
+
+		for (auto i = 0; i < g_capstone.OpCount(); ++i)
+		{
+			duint dest = g_capstone.ResolveOpValue(i, [](x86_reg)->size_t
+			{
+				return 0;
+			});
+			// is this a destination outside of our module?
+
+		}
+		index += g_capstone.Size();
+		start_addr += g_capstone.Size();
+
+	
+		
 	}
 
-	return false;
+	return true;
 }
 
-bool SetupEnvironment(uc_engine* eng)
+bool SetupEnvironment(uc_engine* eng, duint threadID)
 {
+	_plugin_logputs("setup environment impl");
     return false;
 }
 
