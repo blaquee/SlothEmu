@@ -7,6 +7,9 @@ bool g_EngineInit;
 uc_engine* g_engine = NULL;
 Capstone g_capstone;
 
+std::vector<MEMACCESSINFO> memoryAccessList;
+std::vector<DSTADDRINFO> destAddrInfoList;
+
 // some logic for emulated code
 bool isSegmentAccessed = false;
 bool isSystemCall = false;
@@ -58,21 +61,55 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 			_plugin_logputs("Could not disassemble code");
 			return false;
 		}
-		//move to next instruction
 
-		_plugin_logprintf("Instruction: %llx %s\n", start_addr, g_capstone.InstructionText(false).c_str());
+		_plugin_logprintf("Instruction: %x %s\n", start_addr, g_capstone.InstructionText(false).c_str());
 
-		//Lets determine what needs to be prepared for the env
-
-		for (auto i = 0; i < g_capstone.OpCount(); ++i)
+		// Lets determine what needs to be prepared for the env
+		// Here we determine the destination for any branches outside of emulated region.
+		// Data accesses will be handled by hooks later in emulation
+		if (g_capstone.InGroup(CS_GRP_CALL))
 		{
-			duint dest = g_capstone.ResolveOpValue(i, [](x86_reg)->size_t
+			_plugin_logputs("Call instruction reached..");
+			for (auto i = 0; i < g_capstone.OpCount(); ++i)
 			{
-				return 0;
-			});
-			// is this a destination outside of our module?
+				duint dest = g_capstone.ResolveOpValue(i, [](x86_reg)->size_t
+				{
+					return 0;
+				});
+				_plugin_logprintf("Destination to: %x\n", dest);
+
+				// is this a destination outside of our module?
+				char modName[256];
+				auto base = DbgFunctions()->ModBaseFromAddr(dest);
+				DbgFunctions()->ModNameFromAddr(base, modName, true);
+				auto party = DbgFunctions()->ModGetParty(base);
+				isSystemCall = 1 ? party : 0;
+				_plugin_logprintf("Calling to module: %s\tIs call to system module: %d\n", modName, isSystemCall);
+			}
 
 		}
+		else if (g_capstone.InGroup(CS_GRP_JUMP))
+		{
+			_plugin_logputs("jmp instruction reached..");
+			for (auto i = 0; i < g_capstone.OpCount(); ++i)
+			{
+				duint dest = g_capstone.ResolveOpValue(i, [](x86_reg)->size_t
+				{
+					return 0;
+				});
+				_plugin_logprintf("Destination to: %x\n", dest);
+
+				// is this a destination outside of our module?
+				char modName[256];
+				auto base = DbgFunctions()->ModBaseFromAddr(dest);
+				DbgFunctions()->ModNameFromAddr(base, modName, true);
+				auto party = DbgFunctions()->ModGetParty(base);
+				isSystemCall = 1 ? party : 0;
+				_plugin_logprintf("Jump to module: %s\tIs jump to system: %d\n", modName, isSystemCall);
+			}
+
+		}
+
 		index += g_capstone.Size();
 		start_addr += g_capstone.Size();
 
@@ -81,6 +118,14 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 	}
 
 	return true;
+}
+
+void CleanupEmuEngine()
+{
+	if (g_engine)
+	{
+
+	}
 }
 
 bool SetupEnvironment(uc_engine* eng, duint threadID)
