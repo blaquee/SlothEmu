@@ -4,14 +4,18 @@
 #include "capstone_wrapper/capstone_wrapper.h"
 #include "defines.h"
 #include "plugin.h"
+#include "Cpu.h"
 #include <vector>
 
+
+extern bool isDebugging;
 
 // Some structs
 typedef struct _DSTADDRINFO
 {
-	duint addr;
-	bool inMod; //is this in the main module?
+	duint from;
+	duint to;
+	bool toMainMod; //is this in the main module?
 }DSTADDRINFO, *PDSTADDRINFO;
 
 typedef struct _MEMACCESSINFO
@@ -43,7 +47,7 @@ namespace engine
 	class EmuEngine
 	{
 	private:
-		uc_engine* eng = nullptr;
+		uc_engine* eng;
 		bool mEngineInit;
 		bool mStackInit;
 		bool mGdtInit;
@@ -51,6 +55,7 @@ namespace engine
 		bool mGsSegInit;
 		//bool mLightEmu;
 
+		char* mInstructionData;
 		std::vector<unsigned char> data;
 		std::vector<Capstone> cInstructions;
 
@@ -61,7 +66,9 @@ namespace engine
 		mStackInit(false),
 		mGdtInit(false),
 		mFsSegInit(false),
-		mGsSegInit(false)
+		mGsSegInit(false),
+		mInstructionData(nullptr),
+		eng(nullptr)
 		{
 		}
 
@@ -71,7 +78,7 @@ namespace engine
 		bool AccessDescriptors();
 		bool EngineInit();
 		bool AccessSegments();
-		bool AddDataToEmulate(unsigned char* data, size_t len);
+		bool AddDataToEmulate(unsigned char* data, size_t len, duint start_address);
 
 
 	};

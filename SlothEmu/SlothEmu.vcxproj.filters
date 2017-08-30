@@ -305,6 +305,9 @@
     <ClInclude Include="inc\capstone_wrapper\capstone_wrapper.h">
       <Filter>Header Files\capstone_wrapper</Filter>
     </ClInclude>
+    <ClInclude Include="Cpu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="pluginsdk\x32bridge.lib">
@@ -374,6 +377,9 @@
     </ClCompile>
     <ClCompile Include="inc\capstone_wrapper\capstone_wrapper.cpp">
       <Filter>Header Files\capstone_wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="Cpu.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

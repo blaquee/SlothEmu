@@ -165,3 +165,23 @@ typedef _PEB_T<DWORD, DWORD64, 34> PEB32;
 typedef _PEB_T<DWORD64, DWORD, 30> PEB64;
 #pragma pack(pop)
 
+/*
+#define PRIX8        "hhX"
+#define PRIX16       "hX"
+#define PRIX32       "X"
+#define PRIX64       "llX"
+#define PRIXLEAST8   PRIX8
+#define PRIXLEAST16  PRIX16
+#define PRIXLEAST32  PRIX32
+#define PRIXLEAST64  PRIX64
+#define PRIXFAST8    PRIX8
+#define PRIXFAST16   PRIX32
+#define PRIXFAST32   PRIX32
+#define PRIXFAST64   PRIX64
+#define PRIXMAX      PRIX64
+#ifdef _WIN64
+#define PRIXPTR  PRIX64
+#else
+#define PRIXPTR  PRIX32
+#endif
+*/

@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="emu.cpp" />
     <ClCompile Include="inc\capstone_wrapper\capstone_wrapper.cpp" />
     <ClCompile Include="plugin.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="..\inc\unicorn\arm64.h" />
     <ClInclude Include="..\inc\unicorn\unicorn.h" />
     <ClInclude Include="..\inc\unicorn\x86.h" />
+    <ClInclude Include="Cpu.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="emu.h" />
     <ClInclude Include="inc\capstone_wrapper\capstone_wrapper.h" />

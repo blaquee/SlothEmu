@@ -71,7 +71,9 @@ PLUG_EXPORT void CBINITDEBUG(CBTYPE cbType, PLUG_CB_INITDEBUG* info)
 
 PLUG_EXPORT void CBSTOPDEBUG(CBTYPE cbType, PLUG_CB_STOPDEBUG* info)
 {
+	isDebugging = false;
     _plugin_logputs("[" PLUGIN_NAME "] Debugging stopped!");
+	CleanupEmuEngine();
 }
 
 PLUG_EXPORT void CBEXCEPTION(CBTYPE cbType, PLUG_CB_EXCEPTION* info)
@@ -122,14 +124,12 @@ bool pluginStop()
     _plugin_menuclear(hMenuDisasm);
     _plugin_menuclear(hMenuDump);
     _plugin_menuclear(hMenuStack);
+	CleanupEmuEngine();
     return true;
 }
 
 //Do GUI/Menu related things here.
 void pluginSetup()
 {
-    //_plugin_menuaddentry(hMenu, MENU_TEST, "&Menu Test");
     _plugin_menuaddentry(hMenuDisasm, MENU_DISASM_ADLER32, "&Emulate Selection");
-    //_plugin_menuaddentry(hMenuDump, MENU_DUMP_ADLER32, "&Adler32 Selection");
-    //_plugin_menuaddentry(hMenuStack, MENU_STACK_ADLER32, "&Adler32 Selection");
 }
