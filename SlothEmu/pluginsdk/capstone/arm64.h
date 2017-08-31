@@ -64,7 +64,7 @@ typedef enum arm64_cc
 } arm64_cc;
 
 //> System registers
-typedef enum arm64_mrs_reg
+typedef enum arm64_sysreg
 {
     //> System registers for MRS
     ARM64_SYSREG_INVALID           = 0,
@@ -1150,6 +1150,9 @@ typedef enum arm64_insn
     ARM64_INS_DC,
     ARM64_INS_AT,
     ARM64_INS_TLBI,
+
+    ARM64_INS_NEGS,
+    ARM64_INS_NGCS,
 
     ARM64_INS_ENDING,  // <-- mark the end of the list of insn
 } arm64_insn;

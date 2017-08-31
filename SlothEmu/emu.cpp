@@ -155,7 +155,27 @@ bool AddHooks(uc_engine* uc)
 	// add code hook
 
 }
-bool EmulateData(const char* data, size_t size );
+
+duint GetCurrentStack();
+duint GetStackLimitForThread(duint threadId, )
+{
+	if (!isDebugging)
+		return 0;
+	//get the current threads TEB, for stack base and limit
+	PTEB teb = (PTEB)DbgGetTebAddress(threadId);
+	if (teb)
+	{
+
+	}
+
+}
+bool EmulateData(const char* data, size_t size, duint start_address)
+{
+	if (!isDebugging)
+		return false;
+	uc_err error;
+
+}
 
 void CleanupEmuEngine()
 {

@@ -41,6 +41,13 @@ typedef struct
 
 }EMUDATA;
 
+typedef struct _STACKINFO
+{
+	duint tid;
+	duint base;
+	duint limit;
+}STACKINFO, *PSTACKINFO;
+
 // Work on this later
 namespace engine
 {
@@ -57,6 +64,7 @@ namespace engine
 
 		char* mInstructionData;
 		std::vector<unsigned char> data;
+		// disassembled instructions with info
 		std::vector<Capstone> cInstructions;
 
 
@@ -79,8 +87,7 @@ namespace engine
 		bool EngineInit();
 		bool AccessSegments();
 		bool AddDataToEmulate(unsigned char* data, size_t len, duint start_address);
-
-
+		bool CopyDataToEmulate(const unsigned char* data);
 	};
 
 }
