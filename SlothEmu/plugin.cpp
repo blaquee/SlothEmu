@@ -33,26 +33,21 @@ bool ReadSelection(int hWindow)
     {
         if(data)
         {
-			// if emulator is active, pass data to be emulated
-			if (g_EngineInit && g_engine)
+			if (!PrepareDataToEmulate(data, lenSelection, sel.start, false))
 			{
-				if (!PrepareDataToEmulate(data, lenSelection, sel.start, false))
-				{
-					_plugin_logputs("Failed to emulate the data");
-					return false;
-				}
-			}
-			else
-			{
-				_plugin_logputs("Emulator not initialized");
+				_plugin_logputs("Failed to emulate the data");
 				return false;
 			}
-        }
-    }
+		}
+     }
 	return true;
 }
 
 
+static bool cbEmuCommand(int argc, char* argv[])
+{
+	// slothemu [init, start]
+}
 static bool cbTestCommand(int argc, char* argv[])
 {
     _plugin_logputs("[" PLUGIN_NAME "] Test command!");

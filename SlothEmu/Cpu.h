@@ -1,13 +1,10 @@
 //**********************************************************************
 // Class Definition File: Cpu.h
 // Author: glindor
-// Date: Aug 22, 2017
 //
 // Abstract:
 //
 //   This file contains the class definition for class Cpu.
-//
-// Copyright (c) 2017, glindor.
 //
 //**********************************************************************
 
@@ -28,6 +25,7 @@ private:
 	duint CDX;
 	duint CBX;
 	duint CDI;
+	duint CSI;
 	duint CBP;
 	duint CSP;
 	duint R8;
@@ -97,6 +95,10 @@ public:
 	duint getCDI() const;
 
 	void setCDI(const duint & the_value);
+
+	duint getCSI() const;
+
+	void setCSI(const duint & the_value);
 
 	duint getCBP() const;
 

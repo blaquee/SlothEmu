@@ -22,29 +22,52 @@
 #define VIP_INDEX		20
 #define ID_INDEX		21
 
+#define PAGE_SHIFT              (12)
+#define PAGE_ALIGN(Va)          ((ULONG_PTR)((ULONG_PTR)(Va) & ~(PAGE_SIZE - 1)))
+#define BYTES_TO_PAGES(Size)    (((Size) >> PAGE_SHIFT) + (((Size) & (PAGE_SIZE - 1)) != 0))
+#define ROUND_TO_PAGES(Size)    (((ULONG_PTR)(Size) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
 
 #pragma pack(push, 1)
-typedef struct _SegmentDescriptor {
-    union {
-        struct {
-            unsigned short limit_low;
-            unsigned short base_low;
-            unsigned char base_mid;
-            unsigned char type : 4;
-            unsigned char system : 1;
-            unsigned char dpl : 2;
-            unsigned char present : 1;
-            unsigned char limit_hi : 4;
-            unsigned char available : 1;
-            unsigned char is_64_code : 1;
-            unsigned char db : 1;
-            unsigned char granularity : 1;
-            unsigned char base_hi;
-        };
-        unsigned long long descriptor; // resize 8byte.
-    };
-}SegmentDescriptor, *PSegmentDescriptor;
+struct SegmentDescriptor {
+	union {
+		struct {
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+			unsigned short limit0;
+			unsigned short base0;
+			unsigned char base1;
+			unsigned char type : 4;
+			unsigned char system : 1;      /* S flag */
+			unsigned char dpl : 2;
+			unsigned char present : 1;     /* P flag */
+			unsigned char limit1 : 4;
+			unsigned char avail : 1;
+			unsigned char is_64_code : 1;  /* L flag */
+			unsigned char db : 1;          /* DB flag */
+			unsigned char granularity : 1; /* G flag */
+			unsigned char base2;
+#else
+			unsigned char base2;
+			unsigned char granularity : 1; /* G flag */
+			unsigned char db : 1;          /* DB flag */
+			unsigned char is_64_code : 1;  /* L flag */
+			unsigned char avail : 1;
+			unsigned char limit1 : 4;
+			unsigned char present : 1;     /* P flag */
+			unsigned char dpl : 2;
+			unsigned char system : 1;      /* S flag */
+			unsigned char type : 4;
+			unsigned char base1;
+			unsigned short base0;
+			unsigned short limit0;
+#endif
+		};
+		uint64_t desc;
+	};
+};
 #pragma pack(pop)
+
+#define SEGBASE(d) ((uint32_t)((((d).desc >> 16) & 0xffffff) | (((d).desc >> 32) & 0xff000000)))
+#define SEGLIMIT(d) ((d).limit0 | (((unsigned int)(d).limit1) << 16))
 
 
 // borrowed from rewolf

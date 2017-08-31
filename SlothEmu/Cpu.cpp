@@ -286,6 +286,16 @@ void Cpu::setCDI(const duint & the_value)
 	CDI = the_value;
 }
 
+duint Cpu::getCSI() const
+{
+	return CSI;
+}
+
+void Cpu::setCSI(const duint & the_value)
+{
+	CSI = the_value;
+}
+
 //======================================================================
 //  Member Function: Cpu::CBP
 //

@@ -170,9 +170,11 @@
   <ItemGroup>
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="emu.cpp" />
+    <ClCompile Include="EmuHooks.cpp" />
     <ClCompile Include="inc\capstone_wrapper\capstone_wrapper.cpp" />
     <ClCompile Include="plugin.cpp" />
     <ClCompile Include="pluginmain.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\inc\unicorn\arm64.h" />
@@ -181,6 +183,7 @@
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="emu.h" />
+    <ClInclude Include="EmuHooks.h" />
     <ClInclude Include="inc\capstone_wrapper\capstone_wrapper.h" />
     <ClInclude Include="plugin.h" />
     <ClInclude Include="pluginmain.h" />
@@ -261,6 +264,7 @@
     <ClInclude Include="pluginsdk\_scriptapi_register.h" />
     <ClInclude Include="pluginsdk\_scriptapi_stack.h" />
     <ClInclude Include="pluginsdk\_scriptapi_symbol.h" />
+    <ClInclude Include="StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="pluginsdk\capstone\capstone_x64.lib">

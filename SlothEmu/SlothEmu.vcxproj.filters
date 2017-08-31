@@ -308,6 +308,12 @@
     <ClInclude Include="Cpu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EmuHooks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="pluginsdk\x32bridge.lib">
@@ -379,6 +385,12 @@
       <Filter>Header Files\capstone_wrapper</Filter>
     </ClCompile>
     <ClCompile Include="Cpu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EmuHooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

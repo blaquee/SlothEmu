@@ -5,6 +5,7 @@
 #include "defines.h"
 #include "plugin.h"
 #include "Cpu.h"
+#include "EmuHooks.h"
 #include <vector>
 
 
@@ -88,10 +89,19 @@ namespace engine
 		bool AccessSegments();
 		bool AddDataToEmulate(unsigned char* data, size_t len, duint start_address);
 		bool CopyDataToEmulate(const unsigned char* data);
+
+		//callbacks
+
 	};
 
 }
 
+#define CHECKED_WRITE_REG(err, uc, reg, value)	\
+uc_err __err = err;								\
+if (!(uc))return false;							\
+__err = uc_reg_write((uc), (reg), (value));		\
+if(__err != UC_ERR_OK) return false;			\
+else return true
 
 
 bool InitEmuEngine();
@@ -100,5 +110,5 @@ bool SetupDescriptorTable(uc_engine* eng);
 bool SetupContext(uc_engine* eng);
 bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start_addr, bool curCip);
 
-bool EmulateData(uc_engine* eng, unsigned char* data, size_t len);
+bool EmulateData(uc_engine* eng, unsigned char* data, size_t len, bool zeroRegs);
 void CleanupEmuEngine();
