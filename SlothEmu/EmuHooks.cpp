@@ -5,6 +5,8 @@ void HookInstructions(uc_engine* uc, duint addr, size_t size, void* userdata)
 	duint curRip;
 	uc_reg_read(uc, UC_X86_REG_RIP, &curRip);
 	_plugin_logprintf("executing instruction at 0x%X, size: %u", addr, size);
+	// callback
+	// OnInstructionExecute();
 	return;
 }
 

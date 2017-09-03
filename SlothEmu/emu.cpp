@@ -15,11 +15,6 @@ std::vector<DSTADDRINFO> destAddrInfoList;
 // some logic for emulated code
 bool isSegmentAccessed = false;
 
-static void CodeHook(uc_engine* uc, duint address, size_t size, void* userdata)
-{
-	_plugin_logprintf("Executing code at 0x%X, length = 0x%X\n", address, size);
-}
-
 bool InitEmuEngine()
 {
     //initialize the engine 
@@ -62,9 +57,8 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 	isSegmentAccessed = false;
 
 
-	_plugin_logprintf("About to start emulating address: %08x with %x bytes\n", start_addr, dataLen);
+	_plugin_logprintf("About to start emulating address: %08x with %u bytes\n", start_addr, dataLen);
 
-	// disassemble and determine if code accesses any segments we need to setup or syscalls
 	if (!g_EngineInit || !g_engine)
 	{
 		_plugin_logputs("Engine not started!");
@@ -161,19 +155,37 @@ bool AddHooks(uc_engine* uc)
 
 }
 
-bool EmuGetCurrentStackAddr(duint addr) 
+
+bool EmuGetCurrentStackLimit(duint limit)
 {
 	if (!isDebugging)
 	{
 		_plugin_logputs("Not debugging");
 	}
 	STACKINFO sinfo;
-	EmuGetStackLimitForThread(DbgGetThreadId(), &sinfo);
+	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
+	if (sinfo.limit)
+	{
+		limit = sinfo.limit;
+	}
+}
 
+bool EmuGetCurrentStackBase(duint base) 
+{
+	if (!isDebugging)
+	{
+		_plugin_logputs("Not debugging");
+	}
+	STACKINFO sinfo;
+	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
+	if (sinfo.base)
+	{
+		base = sinfo.base;
+	}
 }
 
 // returns stack base and limit for a specified thread ID
-void EmuGetStackLimitForThread(duint threadId, STACKINFO* sinfo)
+void EmuGetStackInfoForThread(duint threadId, STACKINFO* sinfo)
 {
 	if (!isDebugging)
 	{
@@ -301,12 +313,15 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool nullIn
 		return false;
 	}
 
-	// map the stack
-	auto stack_addr = 
+	duint slimit;
+	EmuGetCurrentStackLimit(slimit);
+
+	auto stack_addr = cpu.getCSP();
+	auto stack_aligned = PAGE_ALIGN(stack_addr);
+	err = uc_mem_map(g_engine, stack_aligned, slimit, UC_PROT_READ | UC_PROT_WRITE);
 
 	auto aligned_address = PAGE_ALIGN(start_address);
 	auto filler_size = start_address - aligned_address;
-#define FILLER 0x90
 	
 
 
