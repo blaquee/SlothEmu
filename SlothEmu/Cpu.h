@@ -47,12 +47,12 @@ private:
 	duint IF;
 	duint DF;
 	duint OF;
-	duint GS;
-	duint FS;
-	duint ES;
-	duint DS;
-	duint CS;
-	duint SS;
+	unsigned short GS;
+	unsigned short FS;
+	unsigned short ES;
+	unsigned short DS;
+	unsigned short CS;
+	unsigned short SS;
 	duint LastError;
 	duint DR0;
 	duint DR1;
@@ -72,177 +72,177 @@ public:
 
 	~Cpu();
 
-	Cpu & operator =(const Cpu & that);
+	Cpu & operator =(const Cpu & that) = default;
 
 	void Copy(const Cpu & that);
 
 	duint getCAX() const;
 
-	void setCAX(const duint & the_value);
+	void setCAX(const duint & value);
 
 	duint getCCX() const;
 
-	void setCCX(const duint & the_value);
+	void setCCX(const duint & value);
 
 	duint getCDX() const;
 
-	void setCDX(const duint & the_value);
+	void setCDX(const duint & value);
 
 	duint getCBX() const;
 
-	void setCBX(const duint & the_value);
+	void setCBX(const duint & value);
 
 	duint getCDI() const;
 
-	void setCDI(const duint & the_value);
+	void setCDI(const duint & value);
 
 	duint getCSI() const;
 
-	void setCSI(const duint & the_value);
+	void setCSI(const duint & value);
 
 	duint getCBP() const;
 
-	void setCBP(const duint & the_value);
+	void setCBP(const duint & value);
 
 	duint getCSP() const;
 
-	void setCSP(const duint & the_value);
+	void setCSP(const duint & value);
 
 	duint getR8() const;
 
-	void setR8(const duint & the_value);
+	void setR8(const duint & value);
 
 	duint getR9() const;
 
-	void setR9(const duint & the_value);
+	void setR9(const duint & value);
 
 	duint getR10() const;
 
-	void setR10(const duint & the_value);
+	void setR10(const duint & value);
 
 	duint getR11() const;
 
-	void setR11(const duint & the_value);
+	void setR11(const duint & value);
 
 	duint getR12() const;
 
-	void setR12(const duint & the_value);
+	void setR12(const duint & value);
 
 	duint getR13() const;
 
-	void setR13(const duint & the_value);
+	void setR13(const duint & value);
 
 	duint getR14() const;
 
-	void setR14(const duint & the_value);
+	void setR14(const duint & value);
 
 	duint getR15() const;
 
-	void setR15(const duint & the_value);
+	void setR15(const duint & value);
 
 	duint getCIP() const;
 
-	void setCIP(const duint & the_value);
+	void setCIP(const duint & value);
 
 	duint getEFLAGS() const;
 
-	void setEFLAGS(const duint & the_value);
+	void setEFLAGS(const duint & value);
 
 	duint getCF() const;
 
-	void setCF(const duint & the_value);
+	void setCF(const duint & value);
 
 	duint getPF() const;
 
-	void setPF(const duint & the_value);
+	void setPF(const duint & value);
 
 	duint getAF() const;
 
-	void setAF(const duint & the_value);
+	void setAF(const duint & value);
 
 	duint getZF() const;
 
-	void setZF(const duint & the_value);
+	void setZF(const duint & value);
 
 	duint getSF() const;
 
-	void setSF(const duint & the_value);
+	void setSF(const duint & value);
 
 	duint getTF() const;
 
-	void setTF(const duint & the_value);
+	void setTF(const duint & value);
 
 	duint getIF() const;
 
-	void setIF(const duint & the_value);
+	void setIF(const duint & value);
 
 	duint getDF() const;
 
-	void setDF(const duint & the_value);
+	void setDF(const duint & value);
 
 	duint getOF() const;
 
-	void setOF(const duint & the_value);
+	void setOF(const duint & value);
 
-	duint getGS() const;
+	unsigned short getGS() const;
 
-	void setGS(const duint & the_value);
+	void setGS(const unsigned short & value);
 
-	duint getFS() const;
+	unsigned short getFS() const;
 
-	void setFS(const duint & the_value);
+	void setFS(const unsigned short & value);
 
-	duint getES() const;
+	unsigned short getES() const;
 
-	void setES(const duint & the_value);
+	void setES(const unsigned short & value);
 
-	duint getDS() const;
+	unsigned short getDS() const;
 
-	void setDS(const duint & the_value);
+	void setDS(const unsigned short & value);
 
-	duint getCS() const;
+	unsigned short getCS() const;
 
-	void setCS(const duint & the_value);
+	void setCS(const unsigned short & value);
 
-	duint getSS() const;
+	unsigned short getSS() const;
 
-	void setSS(const duint & the_value);
+	void setSS(const unsigned short & value);
 
 	duint getLastError() const;
 
-	void setLastError(const duint & the_value);
+	void setLastError(const duint & value);
 
 	duint getDR0() const;
 
-	void setDR0(const duint & the_value);
+	void setDR0(const duint & value);
 
 	duint getDR1() const;
 
-	void setDR1(const duint & the_value);
+	void setDR1(const duint & value);
 
 	duint getDR2() const;
 
-	void setDR2(const duint & the_value);
+	void setDR2(const duint & value);
 
 	duint getDR3() const;
 
-	void setDR3(const duint & the_value);
+	void setDR3(const duint & value);
 
 	duint getDR4() const;
 
-	void setDR4(const duint & the_value);
+	void setDR4(const duint & value);
 
 	duint getDR5() const;
 
-	void setDR5(const duint & the_value);
+	void setDR5(const duint & value);
 
 	duint getDR6() const;
 
-	void setDR6(const duint & the_value);
+	void setDR6(const duint & value);
 
 	duint getDR7() const;
 
-	void setDR7(const duint & the_value);
+	void setDR7(const duint & value);
 };
 
 #endif

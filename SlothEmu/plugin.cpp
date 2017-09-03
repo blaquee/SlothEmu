@@ -2,6 +2,8 @@
 #include "emu.h"
 #include "unicorn\unicorn.h"
 
+#include <vector>
+#include <string>
 
 extern bool g_EngineInit;
 extern uc_engine* g_engine;
@@ -12,7 +14,7 @@ enum
     MENU_DISASM_ADLER32
 };
 
-
+typedef std::vector<std::string> cmdList;
 
 bool ReadSelection(int hWindow)
 {
@@ -44,9 +46,10 @@ bool ReadSelection(int hWindow)
 }
 
 
-static bool cbEmuCommand(int argc, char* argv[])
+static bool cbEmuStart(int argc, char* argv[])
 {
 	// slothemu [init, start]
+	return true;
 }
 static bool cbTestCommand(int argc, char* argv[])
 {
@@ -71,18 +74,6 @@ PLUG_EXPORT void CBSTOPDEBUG(CBTYPE cbType, PLUG_CB_STOPDEBUG* info)
 	CleanupEmuEngine();
 }
 
-PLUG_EXPORT void CBEXCEPTION(CBTYPE cbType, PLUG_CB_EXCEPTION* info)
-{
-    _plugin_logprintf("[" PLUGIN_NAME "] ExceptionRecord.ExceptionCode: %08X\n", info->Exception->ExceptionRecord.ExceptionCode);
-}
-
-PLUG_EXPORT void CBDEBUGEVENT(CBTYPE cbType, PLUG_CB_DEBUGEVENT* info)
-{
-    if(info->DebugEvent->dwDebugEventCode == EXCEPTION_DEBUG_EVENT)
-    {
-        _plugin_logprintf("[" PLUGIN_NAME "] DebugEvent->EXCEPTION_DEBUG_EVENT->%.8X\n", info->DebugEvent->u.Exception.ExceptionRecord.ExceptionCode);
-    }
-}
 
 PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 {

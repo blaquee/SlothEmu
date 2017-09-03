@@ -97,11 +97,10 @@ namespace engine
 }
 
 #define CHECKED_WRITE_REG(err, uc, reg, value)	\
-uc_err __err = err;								\
 if (!(uc))return false;							\
-__err = uc_reg_write((uc), (reg), (value));		\
-if(__err != UC_ERR_OK) return false;			\
-else return true
+err = uc_reg_write((uc), (reg), (value));		\
+if (err != UC_ERR_OK) return false;
+
 
 
 bool InitEmuEngine();

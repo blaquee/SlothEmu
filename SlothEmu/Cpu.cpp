@@ -863,9 +863,9 @@ duint Cpu::getGS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setGS(const duint & the_value)
+void Cpu::setGS(const unsigned short & value)
 {
-	GS = the_value;
+	GS = value;
 }
 
 //======================================================================
@@ -889,9 +889,9 @@ duint Cpu::getFS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setFS(const duint & the_value)
+void Cpu::setFS(const unsigned short & value)
 {
-	FS = the_value;
+	FS = value;
 }
 
 //======================================================================
@@ -915,9 +915,9 @@ duint Cpu::getES() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setES(const duint & the_value)
+void Cpu::setES(const unsigned short & value)
 {
-	ES = the_value;
+	ES = value;
 }
 
 //======================================================================
@@ -941,9 +941,9 @@ duint Cpu::getDS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setDS(const duint & the_value)
+void Cpu::setDS(const unsigned short & value)
 {
-	DS = the_value;
+	DS = value;
 }
 
 //======================================================================
@@ -967,9 +967,9 @@ duint Cpu::getCS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setCS(const duint & the_value)
+void Cpu::setCS(const unsigned short & value)
 {
-	CS = the_value;
+	CS = value;
 }
 
 //======================================================================
@@ -993,9 +993,9 @@ duint Cpu::getSS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setSS(const duint & the_value)
+void Cpu::setSS(const unsigned short & value)
 {
-	SS = the_value;
+	SS = value;
 }
 
 //======================================================================

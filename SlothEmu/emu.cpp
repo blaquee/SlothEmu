@@ -179,42 +179,48 @@ void GetStackLimitForThread(duint threadId, STACKINFO* sinfo)
 	}
 }
 
-bool SetupRegsEmu(uc_engine* uc, Cpu* cpu) 
+bool EmuSetupRegs(uc_engine* uc, Cpu* cpu) 
 {
 	if (!isDebugging)
 		return false;
 
 	uc_err err;
 #ifdef _WIN64
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RAX, (void*)cpu->getCAX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RCX, (void*)cpu->getCCX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RBX, (void*)cpu->getCBX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RDX, (void*)cpu->getCDX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RSI, (void*)cpu->getCSI());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RDI, (void*)cpu->getCDI());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RBP, (void*)cpu->getCBP());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RSP, (void*)cpu->getCSP());
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RAX, (void*)cpu->getCAX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RCX, (void*)cpu->getCCX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RBX, (void*)cpu->getCBX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RDX, (void*)cpu->getCDX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RSI, (void*)cpu->getCSI())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RDI, (void*)cpu->getCDI())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RBP, (void*)cpu->getCBP())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RSP, (void*)cpu->getCSP())
+	
 #else
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EAX, (void*)cpu->getCAX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ECX, (void*)cpu->getCCX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EBX, (void*)cpu->getCBX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EDX, (void*)cpu->getCDX());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ESI, (void*)cpu->getCSI());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EDI, (void*)cpu->getCDI());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EBP, (void*)cpu->getCBP());
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ESP, (void*)cpu->getCSP());
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EAX, (void*)cpu->getCAX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ECX, (void*)cpu->getCCX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EBX, (void*)cpu->getCBX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EDX, (void*)cpu->getCDX())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ESI, (void*)cpu->getCSI())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EDI, (void*)cpu->getCDI())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EBP, (void*)cpu->getCBP())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ESP, (void*)cpu->getCSP())
 #endif
+
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_GS, (void*)cpu->getGS())
+	CHECKED_WRITE_REG(err, uc, UC_X86_REG_CS, (void*)cpu->getCS())
 }
 
-bool EmulateData(const char* data, size_t size, duint start_address, bool zeroRegs)
+bool EmulateData(const char* data, size_t size, duint start_address, bool nullInit)
 {
 	if (!isDebugging)
 		return false;
 	uc_err err;
 	// set up current registers and stack mem
 	Cpu cpu;
-	//REGDUMP rDump;
-	//DbgGetRegDump(&rDump);
+
+	// For segment registers (probably switch to this eventually)
+	REGDUMP rDump;
+	DbgGetRegDump(&rDump);
 
 #ifdef _WIN64
 	cpu.setCAX(Script::Register::GetRAX());
@@ -244,10 +250,16 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool zeroRe
 	cpu.setCSP(Script::Register::GetESP());
 	cpu.setCBP(Script::Register::GetEBP());
 #endif
+	// segment
+	cpu.setCS(rDump.regcontext.cs);
+	cpu.setGS(rDump.regcontext.gs);
+	cpu.setFS(rDump.regcontext.fs);
+	cpu.setSS(rDump.regcontext.ss);
+
 	cpu.setEFLAGS(Script::Register::GetCFLAGS());
 	cpu.setCIP(start_address);
 
-	// set up segment selectors
+	// TODO: set up segment selectors
 	uc_x86_mmr gdtr;
 	duint r_cs;
 	duint r_ss;
@@ -256,6 +268,13 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool zeroRe
 	duint r_es;
 	duint r_ds;
 
+	if (!EmuSetupRegs(g_engine, &cpu))
+	{
+		_plugin_logputs("Register setups failed");
+		return false;
+	}
+
+	auto aligned_address = PAGE_ALIGN(start_address);
 
 }
 
