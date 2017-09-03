@@ -161,8 +161,19 @@ bool AddHooks(uc_engine* uc)
 
 }
 
-duint GetCurrentStack();
-void GetStackLimitForThread(duint threadId, STACKINFO* sinfo)
+bool EmuGetCurrentStackAddr(duint addr) 
+{
+	if (!isDebugging)
+	{
+		_plugin_logputs("Not debugging");
+	}
+	STACKINFO sinfo;
+	EmuGetStackLimitForThread(DbgGetThreadId(), &sinfo);
+
+}
+
+// returns stack base and limit for a specified thread ID
+void EmuGetStackLimitForThread(duint threadId, STACKINFO* sinfo)
 {
 	if (!isDebugging)
 	{
@@ -184,30 +195,46 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	if (!isDebugging)
 		return false;
 
-	uc_err err;
+	auto regWrite = [&uc](int regid, void* value)
+	{
+		uc_err err = uc_reg_write(uc, regid, value);
+		if (err != UC_ERR_OK)
+		{
+			_plugin_logputs("Register write failed");
+			return false;
+		}	
+		return true;
+	};
+
 #ifdef _WIN64
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RAX, (void*)cpu->getCAX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RCX, (void*)cpu->getCCX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RBX, (void*)cpu->getCBX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RDX, (void*)cpu->getCDX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RSI, (void*)cpu->getCSI())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RDI, (void*)cpu->getCDI())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RBP, (void*)cpu->getCBP())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_RSP, (void*)cpu->getCSP())
+	regWrite(UC_X86_REG_RAX, (void*)cpu->getCAX());
+	regWrite(UC_X86_REG_RCX, (void*)cpu->getCCX());
+	regWrite(UC_X86_REG_RBX, (void*)cpu->getCBX());
+	regWrite(UC_X86_REG_RDX, (void*)cpu->getCDX());
+	regWrite(UC_X86_REG_RSI, (void*)cpu->getCSI());
+	regWrite(UC_X86_REG_RDI, (void*)cpu->getCDI());
+	regWrite(UC_X86_REG_RBP, (void*)cpu->getCBP());
+	regWrite(UC_X86_REG_RSP, (void*)cpu->getCSP());
 	
 #else
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EAX, (void*)cpu->getCAX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ECX, (void*)cpu->getCCX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EBX, (void*)cpu->getCBX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EDX, (void*)cpu->getCDX())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ESI, (void*)cpu->getCSI())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EDI, (void*)cpu->getCDI())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_EBP, (void*)cpu->getCBP())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_ESP, (void*)cpu->getCSP())
+	regWrite(UC_X86_REG_EAX, (void*)cpu->getCAX());
+	regWrite(UC_X86_REG_ECX, (void*)cpu->getCCX());
+	regWrite(UC_X86_REG_EBX, (void*)cpu->getCBX());
+	regWrite(UC_X86_REG_EDX, (void*)cpu->getCDX());
+	regWrite(UC_X86_REG_ESI, (void*)cpu->getCSI());
+	regWrite(UC_X86_REG_EDI, (void*)cpu->getCDI());
+	regWrite(UC_X86_REG_EBP, (void*)cpu->getCBP());
+	regWrite(UC_X86_REG_ESP, (void*)cpu->getCSP());
 #endif
 
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_GS, (void*)cpu->getGS())
-	CHECKED_WRITE_REG(err, uc, UC_X86_REG_CS, (void*)cpu->getCS())
+	regWrite(UC_X86_REG_GS, (void*)cpu->getGS());
+	regWrite(UC_X86_REG_CS, (void*)cpu->getCS());
+	regWrite(UC_X86_REG_FS, (void*)cpu->getFS());
+	regWrite(UC_X86_REG_SS, (void*)cpu->getSS());
+
+	//map the memory for the segments and stack
+
+
 }
 
 bool EmulateData(const char* data, size_t size, duint start_address, bool nullInit)
@@ -274,7 +301,14 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool nullIn
 		return false;
 	}
 
+	// map the stack
+	auto stack_addr = 
+
 	auto aligned_address = PAGE_ALIGN(start_address);
+	auto filler_size = start_address - aligned_address;
+#define FILLER 0x90
+	
+
 
 }
 
