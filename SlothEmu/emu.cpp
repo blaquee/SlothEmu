@@ -1,11 +1,15 @@
 #include "emu.h"
 #include "plugin.h"
-
+#include "EmuHooks.h"
+#include "defines.h"
 #include <vector>
 #include <inttypes.h>
 
 bool g_EngineInit; 
 bool isDebugging;
+uc_hook hookcode;
+uc_hook hookMemInvalid;
+uc_hook hookMem;
 uc_engine* g_engine = NULL;
 Capstone g_capstone;
 
@@ -152,36 +156,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 bool AddHooks(uc_engine* uc)
 {
 	// add code hook
-
-}
-
-
-bool EmuGetCurrentStackLimit(duint limit)
-{
-	if (!isDebugging)
-	{
-		_plugin_logputs("Not debugging");
-	}
-	STACKINFO sinfo;
-	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
-	if (sinfo.limit)
-	{
-		limit = sinfo.limit;
-	}
-}
-
-bool EmuGetCurrentStackBase(duint base) 
-{
-	if (!isDebugging)
-	{
-		_plugin_logputs("Not debugging");
-	}
-	STACKINFO sinfo;
-	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
-	if (sinfo.base)
-	{
-		base = sinfo.base;
-	}
+	return false;
 }
 
 // returns stack base and limit for a specified thread ID
@@ -202,6 +177,35 @@ void EmuGetStackInfoForThread(duint threadId, STACKINFO* sinfo)
 	}
 }
 
+void EmuGetCurrentStackLimit(duint & limit)
+{
+	if (!isDebugging)
+	{
+		_plugin_logputs("Not debugging");
+	}
+	STACKINFO sinfo;
+	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
+	if (sinfo.limit)
+	{
+		limit = sinfo.limit;
+	}
+}
+
+void EmuGetCurrentStackBase(duint & base)
+{
+	if (!isDebugging)
+	{
+		_plugin_logputs("Not debugging");
+	}
+	STACKINFO sinfo;
+	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
+	if (sinfo.base)
+	{
+		base = sinfo.base;
+	}
+}
+
+// TODO: fix this (return in args)
 bool EmuSetupRegs(uc_engine* uc, Cpu* cpu) 
 {
 	if (!isDebugging)
@@ -243,16 +247,14 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	regWrite(UC_X86_REG_CS, (void*)cpu->getCS());
 	regWrite(UC_X86_REG_FS, (void*)cpu->getFS());
 	regWrite(UC_X86_REG_SS, (void*)cpu->getSS());
-
-	//map the memory for the segments and stack
-
-
+	
 }
 
 bool EmulateData(const char* data, size_t size, duint start_address, bool nullInit)
 {
 	if (!isDebugging)
 		return false;
+
 	uc_err err;
 	// set up current registers and stack mem
 	Cpu cpu;
@@ -307,23 +309,87 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool nullIn
 	duint r_es;
 	duint r_ds;
 
+	//set up our hooks
+	err = uc_hook_add(g_engine, &hookcode, UC_HOOK_CODE, EmuHookCode, nullptr, start_address, start_address + size);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("Failed to register code hook");
+		return false;
+	}
+	err = uc_hook_add(g_engine, &hookMemInvalid, UC_HOOK_MEM_INVALID, EmuHookMemInvalid, nullptr, 1, 0);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("Failed to register mem invalid hook");
+		return false;
+	}
+	err = uc_hook_add(g_engine, &hookMem, UC_HOOK_MEM_WRITE, EmuHookMem, nullptr, 1, 0);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("Failed to register mem write");
+		return false;
+	}
+
+	//stack limit
+	duint slimit;
+	EmuGetCurrentStackLimit(slimit);
+	_plugin_logprintf("Stack Limit: %u", slimit);
+
+	// map our stack and point to CSP
+	auto stack_addr = cpu.getCSP();
+	auto stack_aligned = PAGE_ALIGN(stack_addr);
+	_plugin_logprintf("Aligned stack address: %u", stack_aligned);
+	err = uc_mem_map_ptr(g_engine, stack_aligned, slimit, UC_PROT_READ | UC_PROT_WRITE, &stack_addr);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("Memory Map for stack failed");
+		return false;
+	}
+
+	//map memory for our code
+	auto aligned_address = PAGE_ALIGN(start_address);
+	duint filler_size = start_address - aligned_address;
+	err = uc_mem_map(g_engine, aligned_address, BYTES_TO_PAGES(size + filler_size), UC_PROT_ALL);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("Memory map failed for code");
+		return false;
+	}
+
+	char *filler = (char*)malloc(filler_size);
+	memset(filler, 0x90, filler_size);
+	//filler for code
+	err = uc_mem_write(g_engine, aligned_address, filler, filler_size);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("Failed to write filler bytes");
+		free(filler);
+		return false;
+	}
+	//write code
+	err = uc_mem_write(g_engine, aligned_address + filler_size, data, size);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("writing code failed");
+		free(filler);
+		return false;
+	}
+
+	// setup the registers
 	if (!EmuSetupRegs(g_engine, &cpu))
 	{
 		_plugin_logputs("Register setups failed");
 		return false;
 	}
 
-	duint slimit;
-	EmuGetCurrentStackLimit(slimit);
+	// STARRRRTTTT
+	err = uc_emu_start(g_engine, start_address, start_address + size, 0, 0);
+	if (err != UC_ERR_OK)
+	{
+		_plugin_logputs("Something weird happend with emulation start");
+	}
 
-	auto stack_addr = cpu.getCSP();
-	auto stack_aligned = PAGE_ALIGN(stack_addr);
-	err = uc_mem_map(g_engine, stack_aligned, slimit, UC_PROT_READ | UC_PROT_WRITE);
 
-	auto aligned_address = PAGE_ALIGN(start_address);
-	auto filler_size = start_address - aligned_address;
-	
-
+	return true;
 
 }
 
@@ -333,25 +399,4 @@ void CleanupEmuEngine()
 	{
 		uc_close(g_engine);
 	}
-}
-
-bool SetupEnvironment(uc_engine* eng, duint threadID)
-{
-	_plugin_logputs("setup environment impl");
-    return false;
-}
-
-bool SetupDescriptorTable(uc_engine* eng)
-{
-    return false;
-}
-
-bool SetupContext(uc_engine* eng)
-{
-    return false;
-}
-
-bool SetupStack(uc_engine* eng)
-{
-	return false;
 }

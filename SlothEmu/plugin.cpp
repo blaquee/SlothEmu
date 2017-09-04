@@ -40,6 +40,11 @@ bool ReadSelection(int hWindow)
 				_plugin_logputs("Failed to emulate the data");
 				return false;
 			}
+			if (!EmulateData(g_engine, data, lenSelection, false))
+			{
+				_plugin_logputs("Emulation finished");
+				return false;
+			}
 		}
      }
 	return true;

@@ -1,15 +1,20 @@
 #pragma once
 
+#include "plugin.h"
 #include "unicorn/unicorn.h"
 #include "capstone_wrapper/capstone_wrapper.h"
-#include "defines.h"
-#include "plugin.h"
 #include "Cpu.h"
-#include "EmuHooks.h"
+
 #include <vector>
 
 
+/* EXTERNS defined and initialized elsewhere */
 extern bool isDebugging;
+extern uc_hook hookcode;
+extern uc_hook hookMemInvalid;
+extern uc_hook hookMem;
+/*********************************************/
+
 
 // Some structs
 typedef struct _DSTADDRINFO
@@ -50,6 +55,7 @@ typedef struct _STACKINFO
 }STACKINFO, *PSTACKINFO;
 
 // Work on this later
+/*
 namespace engine
 {
 	class EmuEngine
@@ -95,6 +101,7 @@ namespace engine
 	};
 
 }
+*/
 
 #define CHECKED_WRITE_REG(err, uc, reg, value)	\
 if (!(uc))return false;							\
@@ -104,10 +111,12 @@ if (err != UC_ERR_OK) return false;
 
 
 bool InitEmuEngine();
-bool SetupEnvironment(uc_engine* eng, duint threadID);
-bool SetupDescriptorTable(uc_engine* eng);
-bool SetupContext(uc_engine* eng);
 bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start_addr, bool curCip);
 
+void EmuGetStackInfoForThread(duint threadId, STACKINFO* sinfo);
+void EmuGetCurrentStackLimit(duint & limit);
+void EmuGetCurrentStackBase(duint & base);
+
+bool EmuSetupRegs(uc_engine* uc, Cpu* cpu);
 bool EmulateData(uc_engine* eng, unsigned char* data, size_t len, bool zeroRegs);
 void CleanupEmuEngine();

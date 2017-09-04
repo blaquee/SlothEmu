@@ -1,16 +1,3 @@
-//**********************************************************************
-// Class Implementation File: Cpu.cpp
-// Author: glindor
-// Date: Aug 22, 2017
-//
-// Abstract:
-//
-//   This file contains the class implementation for class Cpu.
-//
-// Copyright (c) 2017, glindor.
-//
-//**********************************************************************
-
 #include "Cpu.h"
 
 Cpu::Cpu()
@@ -77,27 +64,6 @@ Cpu::Cpu(const Cpu & that)
 
 Cpu::~Cpu()
 {
-}
-
-//======================================================================
-//  Operator: Cpu::operator =
-//
-//  Abstract:
-//
-//      This equals operator copies the passed class instance to this class instance
-//      and returns this class instance.
-//======================================================================
-
-Cpu & Cpu::operator =(const Cpu & that)
-{
-	// TODO: Consider testing for inequality by value.
-	//if (*this != *that)
-	if (this != &that)
-	{
-		Copy(that);
-	}
-
-	return *this;
 }
 
 //======================================================================
@@ -850,7 +816,7 @@ void Cpu::setOF(const duint & the_value)
 //      This method xxxxxx
 //======================================================================
 
-duint Cpu::getGS() const
+unsigned short Cpu::getGS() const
 {
 	return GS;
 }
@@ -876,7 +842,7 @@ void Cpu::setGS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-duint Cpu::getFS() const
+unsigned short Cpu::getFS() const
 {
 	return FS;
 }
@@ -902,7 +868,7 @@ void Cpu::setFS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-duint Cpu::getES() const
+unsigned short Cpu::getES() const
 {
 	return ES;
 }
@@ -928,7 +894,7 @@ void Cpu::setES(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-duint Cpu::getDS() const
+unsigned short Cpu::getDS() const
 {
 	return DS;
 }
@@ -954,7 +920,7 @@ void Cpu::setDS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-duint Cpu::getCS() const
+unsigned short Cpu::getCS() const
 {
 	return CS;
 }
@@ -980,7 +946,7 @@ void Cpu::setCS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-duint Cpu::getSS() const
+unsigned short Cpu::getSS() const
 {
 	return SS;
 }

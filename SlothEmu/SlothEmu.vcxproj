@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClCompile Include="Cpu.cpp" />
     <ClCompile Include="emu.cpp" />
+    <ClCompile Include="EmuDumps.cpp" />
     <ClCompile Include="EmuHooks.cpp" />
     <ClCompile Include="inc\capstone_wrapper\capstone_wrapper.cpp" />
     <ClCompile Include="plugin.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Cpu.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="emu.h" />
+    <ClInclude Include="EmuDumps.h" />
     <ClInclude Include="EmuHooks.h" />
     <ClInclude Include="inc\capstone_wrapper\capstone_wrapper.h" />
     <ClInclude Include="plugin.h" />
