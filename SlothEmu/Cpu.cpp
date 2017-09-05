@@ -1,47 +1,47 @@
 #include "Cpu.h"
 
 Cpu::Cpu()
-	: CAX(0)
-	, CCX(0)
-	, CDX(0)
-	, CBX(0)
-	, CDI(0)
-	, CBP(0)
-	, CSP(0)
-	, R8(0)
-	, R9(0)
-	, R10(0)
-	, R11(0)
-	, R12(0)
-	, R13(0)
-	, R14(0)
-	, R15(0)
-	, CIP(0)
-	, ELFAGS(0)
-	, CF(0)
-	, PF(0)
-	, AF(0)
-	, ZF(0)
-	, SF(0)
-	, TF(0)
-	, IF(0)
-	, DF(0)
-	, OF(0)
-	, GS(0)
-	, FS(0)
-	, ES(0)
-	, DS(0)
-	, CS(0)
-	, SS(0)
-	, LastError(0)
-	, DR0(0)
-	, DR1(0)
-	, DR2(0)
-	, DR3(0)
-	, DR4(0)
-	, DR5(0)
-	, DR6(0)
-	, DR7(0)
+    : CAX(0)
+    , CCX(0)
+    , CDX(0)
+    , CBX(0)
+    , CDI(0)
+    , CBP(0)
+    , CSP(0)
+    , R8(0)
+    , R9(0)
+    , R10(0)
+    , R11(0)
+    , R12(0)
+    , R13(0)
+    , R14(0)
+    , R15(0)
+    , CIP(0)
+    , ELFAGS(0)
+    , CF(0)
+    , PF(0)
+    , AF(0)
+    , ZF(0)
+    , SF(0)
+    , TF(0)
+    , IF(0)
+    , DF(0)
+    , OF(0)
+    , GS(0)
+    , FS(0)
+    , ES(0)
+    , DS(0)
+    , CS(0)
+    , SS(0)
+    , LastError(0)
+    , DR0(0)
+    , DR1(0)
+    , DR2(0)
+    , DR3(0)
+    , DR4(0)
+    , DR5(0)
+    , DR6(0)
+    , DR7(0)
 {
 }
 
@@ -55,7 +55,7 @@ Cpu::Cpu()
 
 Cpu::Cpu(const Cpu & that)
 {
-	Copy(that);
+    Copy(that);
 }
 
 //======================================================================
@@ -76,50 +76,50 @@ Cpu::~Cpu()
 
 void Cpu::Copy(const Cpu & that)
 {
-	// xxxxxx - The code below does a shallow copy of the class data members.
-	// If any data members are pointers and a deep copy is needed then this code
-	// should be changed.
-	CAX = that.CAX;
-	CCX = that.CCX;
-	CDX = that.CDX;
-	CBX = that.CBX;
-	CDI = that.CDI;
-	CBP = that.CBP;
-	CSP = that.CSP;
-	R8 = that.R8;
-	R9 = that.R9;
-	R10 = that.R10;
-	R11 = that.R11;
-	R12 = that.R12;
-	R13 = that.R13;
-	R14 = that.R14;
-	R15 = that.R15;
-	CIP = that.CIP;
-	ELFAGS = that.ELFAGS;
-	CF = that.CF;
-	PF = that.PF;
-	AF = that.AF;
-	ZF = that.ZF;
-	SF = that.SF;
-	TF = that.TF;
-	IF = that.IF;
-	DF = that.DF;
-	OF = that.OF;
-	GS = that.GS;
-	FS = that.FS;
-	ES = that.ES;
-	DS = that.DS;
-	CS = that.CS;
-	SS = that.SS;
-	LastError = that.LastError;
-	DR0 = that.DR0;
-	DR1 = that.DR1;
-	DR2 = that.DR2;
-	DR3 = that.DR3;
-	DR4 = that.DR4;
-	DR5 = that.DR5;
-	DR6 = that.DR6;
-	DR7 = that.DR7;
+    // xxxxxx - The code below does a shallow copy of the class data members.
+    // If any data members are pointers and a deep copy is needed then this code
+    // should be changed.
+    CAX = that.CAX;
+    CCX = that.CCX;
+    CDX = that.CDX;
+    CBX = that.CBX;
+    CDI = that.CDI;
+    CBP = that.CBP;
+    CSP = that.CSP;
+    R8 = that.R8;
+    R9 = that.R9;
+    R10 = that.R10;
+    R11 = that.R11;
+    R12 = that.R12;
+    R13 = that.R13;
+    R14 = that.R14;
+    R15 = that.R15;
+    CIP = that.CIP;
+    ELFAGS = that.ELFAGS;
+    CF = that.CF;
+    PF = that.PF;
+    AF = that.AF;
+    ZF = that.ZF;
+    SF = that.SF;
+    TF = that.TF;
+    IF = that.IF;
+    DF = that.DF;
+    OF = that.OF;
+    GS = that.GS;
+    FS = that.FS;
+    ES = that.ES;
+    DS = that.DS;
+    CS = that.CS;
+    SS = that.SS;
+    LastError = that.LastError;
+    DR0 = that.DR0;
+    DR1 = that.DR1;
+    DR2 = that.DR2;
+    DR3 = that.DR3;
+    DR4 = that.DR4;
+    DR5 = that.DR5;
+    DR6 = that.DR6;
+    DR7 = that.DR7;
 }
 
 //======================================================================
@@ -132,7 +132,7 @@ void Cpu::Copy(const Cpu & that)
 
 duint Cpu::getCAX() const
 {
-	return CAX;
+    return CAX;
 }
 
 //======================================================================
@@ -145,7 +145,7 @@ duint Cpu::getCAX() const
 
 void Cpu::setCAX(const duint & the_value)
 {
-	CAX = the_value;
+    CAX = the_value;
 }
 
 //======================================================================
@@ -158,7 +158,7 @@ void Cpu::setCAX(const duint & the_value)
 
 duint Cpu::getCCX() const
 {
-	return CCX;
+    return CCX;
 }
 
 //======================================================================
@@ -171,7 +171,7 @@ duint Cpu::getCCX() const
 
 void Cpu::setCCX(const duint & the_value)
 {
-	CCX = the_value;
+    CCX = the_value;
 }
 
 //======================================================================
@@ -184,7 +184,7 @@ void Cpu::setCCX(const duint & the_value)
 
 duint Cpu::getCDX() const
 {
-	return CDX;
+    return CDX;
 }
 
 //======================================================================
@@ -197,7 +197,7 @@ duint Cpu::getCDX() const
 
 void Cpu::setCDX(const duint & the_value)
 {
-	CDX = the_value;
+    CDX = the_value;
 }
 
 //======================================================================
@@ -210,7 +210,7 @@ void Cpu::setCDX(const duint & the_value)
 
 duint Cpu::getCBX() const
 {
-	return CBX;
+    return CBX;
 }
 
 //======================================================================
@@ -223,7 +223,7 @@ duint Cpu::getCBX() const
 
 void Cpu::setCBX(const duint & the_value)
 {
-	CBX = the_value;
+    CBX = the_value;
 }
 
 //======================================================================
@@ -236,7 +236,7 @@ void Cpu::setCBX(const duint & the_value)
 
 duint Cpu::getCDI() const
 {
-	return CDI;
+    return CDI;
 }
 
 //======================================================================
@@ -249,17 +249,17 @@ duint Cpu::getCDI() const
 
 void Cpu::setCDI(const duint & the_value)
 {
-	CDI = the_value;
+    CDI = the_value;
 }
 
 duint Cpu::getCSI() const
 {
-	return CSI;
+    return CSI;
 }
 
 void Cpu::setCSI(const duint & the_value)
 {
-	CSI = the_value;
+    CSI = the_value;
 }
 
 //======================================================================
@@ -272,7 +272,7 @@ void Cpu::setCSI(const duint & the_value)
 
 duint Cpu::getCBP() const
 {
-	return CBP;
+    return CBP;
 }
 
 //======================================================================
@@ -285,7 +285,7 @@ duint Cpu::getCBP() const
 
 void Cpu::setCBP(const duint & the_value)
 {
-	CBP = the_value;
+    CBP = the_value;
 }
 
 //======================================================================
@@ -298,7 +298,7 @@ void Cpu::setCBP(const duint & the_value)
 
 duint Cpu::getCSP() const
 {
-	return CSP;
+    return CSP;
 }
 
 //======================================================================
@@ -311,7 +311,7 @@ duint Cpu::getCSP() const
 
 void Cpu::setCSP(const duint & the_value)
 {
-	CSP = the_value;
+    CSP = the_value;
 }
 
 //======================================================================
@@ -324,7 +324,7 @@ void Cpu::setCSP(const duint & the_value)
 
 duint Cpu::getR8() const
 {
-	return R8;
+    return R8;
 }
 
 //======================================================================
@@ -337,7 +337,7 @@ duint Cpu::getR8() const
 
 void Cpu::setR8(const duint & the_value)
 {
-	R8 = the_value;
+    R8 = the_value;
 }
 
 //======================================================================
@@ -350,7 +350,7 @@ void Cpu::setR8(const duint & the_value)
 
 duint Cpu::getR9() const
 {
-	return R9;
+    return R9;
 }
 
 //======================================================================
@@ -363,7 +363,7 @@ duint Cpu::getR9() const
 
 void Cpu::setR9(const duint & the_value)
 {
-	R9 = the_value;
+    R9 = the_value;
 }
 
 //======================================================================
@@ -376,7 +376,7 @@ void Cpu::setR9(const duint & the_value)
 
 duint Cpu::getR10() const
 {
-	return R10;
+    return R10;
 }
 
 //======================================================================
@@ -389,7 +389,7 @@ duint Cpu::getR10() const
 
 void Cpu::setR10(const duint & the_value)
 {
-	R10 = the_value;
+    R10 = the_value;
 }
 
 //======================================================================
@@ -402,7 +402,7 @@ void Cpu::setR10(const duint & the_value)
 
 duint Cpu::getR11() const
 {
-	return R11;
+    return R11;
 }
 
 //======================================================================
@@ -415,7 +415,7 @@ duint Cpu::getR11() const
 
 void Cpu::setR11(const duint & the_value)
 {
-	R11 = the_value;
+    R11 = the_value;
 }
 
 //======================================================================
@@ -428,7 +428,7 @@ void Cpu::setR11(const duint & the_value)
 
 duint Cpu::getR12() const
 {
-	return R12;
+    return R12;
 }
 
 //======================================================================
@@ -441,7 +441,7 @@ duint Cpu::getR12() const
 
 void Cpu::setR12(const duint & the_value)
 {
-	R12 = the_value;
+    R12 = the_value;
 }
 
 //======================================================================
@@ -454,7 +454,7 @@ void Cpu::setR12(const duint & the_value)
 
 duint Cpu::getR13() const
 {
-	return R13;
+    return R13;
 }
 
 //======================================================================
@@ -467,7 +467,7 @@ duint Cpu::getR13() const
 
 void Cpu::setR13(const duint & the_value)
 {
-	R13 = the_value;
+    R13 = the_value;
 }
 
 //======================================================================
@@ -480,7 +480,7 @@ void Cpu::setR13(const duint & the_value)
 
 duint Cpu::getR14() const
 {
-	return R14;
+    return R14;
 }
 
 //======================================================================
@@ -493,7 +493,7 @@ duint Cpu::getR14() const
 
 void Cpu::setR14(const duint & the_value)
 {
-	R14 = the_value;
+    R14 = the_value;
 }
 
 //======================================================================
@@ -506,7 +506,7 @@ void Cpu::setR14(const duint & the_value)
 
 duint Cpu::getR15() const
 {
-	return R15;
+    return R15;
 }
 
 //======================================================================
@@ -519,7 +519,7 @@ duint Cpu::getR15() const
 
 void Cpu::setR15(const duint & the_value)
 {
-	R15 = the_value;
+    R15 = the_value;
 }
 
 //======================================================================
@@ -532,7 +532,7 @@ void Cpu::setR15(const duint & the_value)
 
 duint Cpu::getCIP() const
 {
-	return CIP;
+    return CIP;
 }
 
 //======================================================================
@@ -545,7 +545,7 @@ duint Cpu::getCIP() const
 
 void Cpu::setCIP(const duint & the_value)
 {
-	CIP = the_value;
+    CIP = the_value;
 }
 
 //======================================================================
@@ -558,7 +558,7 @@ void Cpu::setCIP(const duint & the_value)
 
 duint Cpu::getEFLAGS() const
 {
-	return ELFAGS;
+    return ELFAGS;
 }
 
 //======================================================================
@@ -571,7 +571,7 @@ duint Cpu::getEFLAGS() const
 
 void Cpu::setEFLAGS(const duint & the_value)
 {
-	ELFAGS = the_value;
+    ELFAGS = the_value;
 }
 
 //======================================================================
@@ -584,7 +584,7 @@ void Cpu::setEFLAGS(const duint & the_value)
 
 duint Cpu::getCF() const
 {
-	return CF;
+    return CF;
 }
 
 //======================================================================
@@ -597,7 +597,7 @@ duint Cpu::getCF() const
 
 void Cpu::setCF(const duint & the_value)
 {
-	CF = the_value;
+    CF = the_value;
 }
 
 //======================================================================
@@ -610,7 +610,7 @@ void Cpu::setCF(const duint & the_value)
 
 duint Cpu::getPF() const
 {
-	return PF;
+    return PF;
 }
 
 //======================================================================
@@ -623,7 +623,7 @@ duint Cpu::getPF() const
 
 void Cpu::setPF(const duint & the_value)
 {
-	PF = the_value;
+    PF = the_value;
 }
 
 //======================================================================
@@ -636,7 +636,7 @@ void Cpu::setPF(const duint & the_value)
 
 duint Cpu::getAF() const
 {
-	return AF;
+    return AF;
 }
 
 //======================================================================
@@ -649,7 +649,7 @@ duint Cpu::getAF() const
 
 void Cpu::setAF(const duint & the_value)
 {
-	AF = the_value;
+    AF = the_value;
 }
 
 //======================================================================
@@ -662,7 +662,7 @@ void Cpu::setAF(const duint & the_value)
 
 duint Cpu::getZF() const
 {
-	return ZF;
+    return ZF;
 }
 
 //======================================================================
@@ -675,7 +675,7 @@ duint Cpu::getZF() const
 
 void Cpu::setZF(const duint & the_value)
 {
-	ZF = the_value;
+    ZF = the_value;
 }
 
 //======================================================================
@@ -688,7 +688,7 @@ void Cpu::setZF(const duint & the_value)
 
 duint Cpu::getSF() const
 {
-	return SF;
+    return SF;
 }
 
 //======================================================================
@@ -701,7 +701,7 @@ duint Cpu::getSF() const
 
 void Cpu::setSF(const duint & the_value)
 {
-	SF = the_value;
+    SF = the_value;
 }
 
 //======================================================================
@@ -714,7 +714,7 @@ void Cpu::setSF(const duint & the_value)
 
 duint Cpu::getTF() const
 {
-	return TF;
+    return TF;
 }
 
 //======================================================================
@@ -727,7 +727,7 @@ duint Cpu::getTF() const
 
 void Cpu::setTF(const duint & the_value)
 {
-	TF = the_value;
+    TF = the_value;
 }
 
 //======================================================================
@@ -740,7 +740,7 @@ void Cpu::setTF(const duint & the_value)
 
 duint Cpu::getIF() const
 {
-	return IF;
+    return IF;
 }
 
 //======================================================================
@@ -753,7 +753,7 @@ duint Cpu::getIF() const
 
 void Cpu::setIF(const duint & the_value)
 {
-	IF = the_value;
+    IF = the_value;
 }
 
 //======================================================================
@@ -766,7 +766,7 @@ void Cpu::setIF(const duint & the_value)
 
 duint Cpu::getDF() const
 {
-	return DF;
+    return DF;
 }
 
 //======================================================================
@@ -779,7 +779,7 @@ duint Cpu::getDF() const
 
 void Cpu::setDF(const duint & the_value)
 {
-	DF = the_value;
+    DF = the_value;
 }
 
 //======================================================================
@@ -792,7 +792,7 @@ void Cpu::setDF(const duint & the_value)
 
 duint Cpu::getOF() const
 {
-	return OF;
+    return OF;
 }
 
 //======================================================================
@@ -805,7 +805,7 @@ duint Cpu::getOF() const
 
 void Cpu::setOF(const duint & the_value)
 {
-	OF = the_value;
+    OF = the_value;
 }
 
 //======================================================================
@@ -818,7 +818,7 @@ void Cpu::setOF(const duint & the_value)
 
 unsigned short Cpu::getGS() const
 {
-	return GS;
+    return GS;
 }
 
 //======================================================================
@@ -831,7 +831,7 @@ unsigned short Cpu::getGS() const
 
 void Cpu::setGS(const unsigned short & value)
 {
-	GS = value;
+    GS = value;
 }
 
 //======================================================================
@@ -844,7 +844,7 @@ void Cpu::setGS(const unsigned short & value)
 
 unsigned short Cpu::getFS() const
 {
-	return FS;
+    return FS;
 }
 
 //======================================================================
@@ -857,7 +857,7 @@ unsigned short Cpu::getFS() const
 
 void Cpu::setFS(const unsigned short & value)
 {
-	FS = value;
+    FS = value;
 }
 
 //======================================================================
@@ -870,7 +870,7 @@ void Cpu::setFS(const unsigned short & value)
 
 unsigned short Cpu::getES() const
 {
-	return ES;
+    return ES;
 }
 
 //======================================================================
@@ -883,7 +883,7 @@ unsigned short Cpu::getES() const
 
 void Cpu::setES(const unsigned short & value)
 {
-	ES = value;
+    ES = value;
 }
 
 //======================================================================
@@ -896,7 +896,7 @@ void Cpu::setES(const unsigned short & value)
 
 unsigned short Cpu::getDS() const
 {
-	return DS;
+    return DS;
 }
 
 //======================================================================
@@ -909,7 +909,7 @@ unsigned short Cpu::getDS() const
 
 void Cpu::setDS(const unsigned short & value)
 {
-	DS = value;
+    DS = value;
 }
 
 //======================================================================
@@ -922,7 +922,7 @@ void Cpu::setDS(const unsigned short & value)
 
 unsigned short Cpu::getCS() const
 {
-	return CS;
+    return CS;
 }
 
 //======================================================================
@@ -935,7 +935,7 @@ unsigned short Cpu::getCS() const
 
 void Cpu::setCS(const unsigned short & value)
 {
-	CS = value;
+    CS = value;
 }
 
 //======================================================================
@@ -948,7 +948,7 @@ void Cpu::setCS(const unsigned short & value)
 
 unsigned short Cpu::getSS() const
 {
-	return SS;
+    return SS;
 }
 
 //======================================================================
@@ -961,7 +961,7 @@ unsigned short Cpu::getSS() const
 
 void Cpu::setSS(const unsigned short & value)
 {
-	SS = value;
+    SS = value;
 }
 
 //======================================================================
@@ -974,7 +974,7 @@ void Cpu::setSS(const unsigned short & value)
 
 duint Cpu::getLastError() const
 {
-	return LastError;
+    return LastError;
 }
 
 //======================================================================
@@ -987,7 +987,7 @@ duint Cpu::getLastError() const
 
 void Cpu::setLastError(const duint & the_value)
 {
-	LastError = the_value;
+    LastError = the_value;
 }
 
 //======================================================================
@@ -1000,7 +1000,7 @@ void Cpu::setLastError(const duint & the_value)
 
 duint Cpu::getDR0() const
 {
-	return DR0;
+    return DR0;
 }
 
 //======================================================================
@@ -1013,7 +1013,7 @@ duint Cpu::getDR0() const
 
 void Cpu::setDR0(const duint & the_value)
 {
-	DR0 = the_value;
+    DR0 = the_value;
 }
 
 //======================================================================
@@ -1026,7 +1026,7 @@ void Cpu::setDR0(const duint & the_value)
 
 duint Cpu::getDR1() const
 {
-	return DR1;
+    return DR1;
 }
 
 //======================================================================
@@ -1039,7 +1039,7 @@ duint Cpu::getDR1() const
 
 void Cpu::setDR1(const duint & the_value)
 {
-	DR1 = the_value;
+    DR1 = the_value;
 }
 
 //======================================================================
@@ -1052,7 +1052,7 @@ void Cpu::setDR1(const duint & the_value)
 
 duint Cpu::getDR2() const
 {
-	return DR2;
+    return DR2;
 }
 
 //======================================================================
@@ -1065,7 +1065,7 @@ duint Cpu::getDR2() const
 
 void Cpu::setDR2(const duint & the_value)
 {
-	DR2 = the_value;
+    DR2 = the_value;
 }
 
 //======================================================================
@@ -1078,7 +1078,7 @@ void Cpu::setDR2(const duint & the_value)
 
 duint Cpu::getDR3() const
 {
-	return DR3;
+    return DR3;
 }
 
 //======================================================================
@@ -1091,7 +1091,7 @@ duint Cpu::getDR3() const
 
 void Cpu::setDR3(const duint & the_value)
 {
-	DR3 = the_value;
+    DR3 = the_value;
 }
 
 //======================================================================
@@ -1104,7 +1104,7 @@ void Cpu::setDR3(const duint & the_value)
 
 duint Cpu::getDR4() const
 {
-	return DR4;
+    return DR4;
 }
 
 //======================================================================
@@ -1117,7 +1117,7 @@ duint Cpu::getDR4() const
 
 void Cpu::setDR4(const duint & the_value)
 {
-	DR4 = the_value;
+    DR4 = the_value;
 }
 
 //======================================================================
@@ -1130,7 +1130,7 @@ void Cpu::setDR4(const duint & the_value)
 
 duint Cpu::getDR5() const
 {
-	return DR5;
+    return DR5;
 }
 
 //======================================================================
@@ -1143,7 +1143,7 @@ duint Cpu::getDR5() const
 
 void Cpu::setDR5(const duint & the_value)
 {
-	DR5 = the_value;
+    DR5 = the_value;
 }
 
 //======================================================================
@@ -1156,7 +1156,7 @@ void Cpu::setDR5(const duint & the_value)
 
 duint Cpu::getDR6() const
 {
-	return DR6;
+    return DR6;
 }
 
 //======================================================================
@@ -1169,7 +1169,7 @@ duint Cpu::getDR6() const
 
 void Cpu::setDR6(const duint & the_value)
 {
-	DR6 = the_value;
+    DR6 = the_value;
 }
 
 //======================================================================
@@ -1182,7 +1182,7 @@ void Cpu::setDR6(const duint & the_value)
 
 duint Cpu::getDR7() const
 {
-	return DR7;
+    return DR7;
 }
 
 //======================================================================
@@ -1195,5 +1195,5 @@ duint Cpu::getDR7() const
 
 void Cpu::setDR7(const duint & the_value)
 {
-	DR7 = the_value;
+    DR7 = the_value;
 }

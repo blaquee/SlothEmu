@@ -18,7 +18,7 @@ typedef std::vector<std::string> cmdList;
 
 bool ReadSelection(int hWindow)
 {
-    if(!DbgIsDebugging())
+    if (!DbgIsDebugging())
     {
         _plugin_logputs("[" PLUGIN_NAME "] Not Debugging");
         return false;
@@ -31,37 +31,37 @@ bool ReadSelection(int hWindow)
     unsigned char* data = new unsigned char[lenSelection];
 
     // Read the memory data
-    if(DbgMemRead(sel.start, data, lenSelection))
+    if (DbgMemRead(sel.start, data, lenSelection))
     {
-        if(data)
+        if (data)
         {
-			if (!PrepareDataToEmulate(data, lenSelection, sel.start, false))
-			{
-				_plugin_logputs("Failed to emulate the data");
-				return false;
-			}
-			if (!EmulateData(g_engine, data, lenSelection, sel.start, false))
-			{
-				_plugin_logputs("Emulation finished");
-				return false;
-			}
-		}
-     }
-	return true;
+            if (!PrepareDataToEmulate(data, lenSelection, sel.start, false))
+            {
+                _plugin_logputs("Failed to emulate the data");
+                return false;
+            }
+            if (!EmulateData(g_engine, data, lenSelection, sel.start, false))
+            {
+                _plugin_logputs("Emulation finished");
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 
 static bool cbEmuStart(int argc, char* argv[])
 {
-	// slothemu [init, start]
-	return true;
+    // slothemu [init, start]
+    return true;
 }
 
 static bool cbTestCommand(int argc, char* argv[])
 {
     _plugin_logputs("[" PLUGIN_NAME "] Test command!");
     char line[GUI_MAX_LINE_SIZE] = "";
-    if(!GuiGetLineWindow("test", line))
+    if (!GuiGetLineWindow("test", line))
         _plugin_logputs("[" PLUGIN_NAME "] Cancel pressed!");
     else
         _plugin_logprintf("[" PLUGIN_NAME "] Line: \"%s\"\n", line);
@@ -70,21 +70,21 @@ static bool cbTestCommand(int argc, char* argv[])
 
 PLUG_EXPORT void CBINITDEBUG(CBTYPE cbType, PLUG_CB_INITDEBUG* info)
 {
-	isDebugging = true;
+    isDebugging = true;
     _plugin_logprintf("[" PLUGIN_NAME "] Debugging of %s started!\n", info->szFileName);
 }
 
 PLUG_EXPORT void CBSTOPDEBUG(CBTYPE cbType, PLUG_CB_STOPDEBUG* info)
 {
-	isDebugging = false;
+    isDebugging = false;
     _plugin_logputs("[" PLUGIN_NAME "] Debugging stopped!");
-	CleanupEmuEngine();
+    CleanupEmuEngine();
 }
 
 
 PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 {
-    switch(info->hEntry)
+    switch (info->hEntry)
     {
     case MENU_DISASM_ADLER32:
         ReadSelection(GUI_DISASSEMBLY);
@@ -98,14 +98,14 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 //Initialize your plugin data here.
 bool pluginInit(PLUG_INITSTRUCT* initStruct)
 {
-    if(!_plugin_registercommand(pluginHandle, PLUGIN_NAME, cbTestCommand, false))
+    if (!_plugin_registercommand(pluginHandle, PLUGIN_NAME, cbTestCommand, false))
         _plugin_logputs("[" PLUGIN_NAME "] Error registering the \"" PLUGIN_NAME "\" command!");
 
-	if (!InitEmuEngine())
-	{
-		_plugin_logputs("Emulation Engine failed to start, failing plugin load");
-		return false;
-	}
+    if (!InitEmuEngine())
+    {
+        _plugin_logputs("Emulation Engine failed to start, failing plugin load");
+        return false;
+    }
     return true; //Return false to cancel loading the plugin.
 }
 
@@ -117,7 +117,7 @@ bool pluginStop()
     _plugin_menuclear(hMenuDisasm);
     _plugin_menuclear(hMenuDump);
     _plugin_menuclear(hMenuStack);
-	CleanupEmuEngine();
+    CleanupEmuEngine();
     return true;
 }
 
