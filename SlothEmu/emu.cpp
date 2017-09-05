@@ -212,7 +212,7 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	if (!isDebugging)
 		return false;
 
-	auto regWrite = [&](int regid, void* value)
+	auto regWrite = [&uc](int regid, void* value)
 	{
 		uc_err err = uc_reg_write(uc, regid, value);
 		if (err != UC_ERR_OK)
@@ -234,14 +234,14 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	regWrite(UC_X86_REG_RSP, (void*)cpu->getCSP());
 	
 #else
-	regWrite(UC_X86_REG_EAX, cpu->getCAX());
-	regWrite(UC_X86_REG_ECX, cpu->getCCX());
-	regWrite(UC_X86_REG_EBX, cpu->getCBX());
-	regWrite(UC_X86_REG_EDX, cpu->getCDX());
-	regWrite(UC_X86_REG_ESI, cpu->getCSI());
-	regWrite(UC_X86_REG_EDI, cpu->getCDI());
-	regWrite(UC_X86_REG_EBP, cpu->getCBP());
-	regWrite(UC_X86_REG_ESP, cpu->getCSP());
+	regWrite(UC_X86_REG_EAX, (void*)cpu->getCAX());
+	regWrite(UC_X86_REG_ECX, (void*)cpu->getCCX());
+	regWrite(UC_X86_REG_EBX, (void*)cpu->getCBX());
+	regWrite(UC_X86_REG_EDX, (void*)cpu->getCDX());
+	regWrite(UC_X86_REG_ESI, (void*)cpu->getCSI());
+	regWrite(UC_X86_REG_EDI, (void*)cpu->getCDI());
+	regWrite(UC_X86_REG_EBP, (void*)cpu->getCBP());
+	regWrite(UC_X86_REG_ESP, (void*)cpu->getCSP());
 #endif
 
 	regWrite(UC_X86_REG_GS, (void*)cpu->getGS());
