@@ -167,7 +167,7 @@ void EmuGetStackInfoForThread(duint threadId, STACKINFO & sinfo)
 
 	// get stack info from teb
 	auto teb_addr = DbgGetTebAddress(threadId);
-	auto pid = DbgGetProcessId();
+	// auto pid = DbgGetProcessId();
 	DbgMemRead(teb_addr, teb, sizeof(TEB));
 	auto *tib = (NT_TIB*)(teb);
 	if (teb)
@@ -212,9 +212,9 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	if (!isDebugging)
 		return false;
 
-	auto regWrite = [&uc](int regid, void* value)
+	auto regWrite = [=](int regid, duint value)
 	{
-		uc_err err = uc_reg_write(uc, regid, value);
+		uc_err err = uc_reg_write(uc, regid, &value);
 		if (err != UC_ERR_OK)
 		{
 			_plugin_logputs("Register write failed");
@@ -224,30 +224,30 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	};
 
 #ifdef _WIN64
-	regWrite(UC_X86_REG_RAX, (void*)cpu->getCAX());
-	regWrite(UC_X86_REG_RCX, (void*)cpu->getCCX());
-	regWrite(UC_X86_REG_RBX, (void*)cpu->getCBX());
-	regWrite(UC_X86_REG_RDX, (void*)cpu->getCDX());
-	regWrite(UC_X86_REG_RSI, (void*)cpu->getCSI());
-	regWrite(UC_X86_REG_RDI, (void*)cpu->getCDI());
-	regWrite(UC_X86_REG_RBP, (void*)cpu->getCBP());
-	regWrite(UC_X86_REG_RSP, (void*)cpu->getCSP());
-	
+	regWrite(UC_X86_REG_RAX, cpu->getCAX());
+	regWrite(UC_X86_REG_RCX, cpu->getCCX());
+	regWrite(UC_X86_REG_RBX, cpu->getCBX());
+	regWrite(UC_X86_REG_RDX, cpu->getCDX());
+	regWrite(UC_X86_REG_RSI, cpu->getCSI());
+	regWrite(UC_X86_REG_RDI, cpu->getCDI());
+	regWrite(UC_X86_REG_RBP, cpu->getCBP());
+	regWrite(UC_X86_REG_RSP, cpu->getCSP());
+
 #else
-	regWrite(UC_X86_REG_EAX, (void*)cpu->getCAX());
-	regWrite(UC_X86_REG_ECX, (void*)cpu->getCCX());
-	regWrite(UC_X86_REG_EBX, (void*)cpu->getCBX());
-	regWrite(UC_X86_REG_EDX, (void*)cpu->getCDX());
-	regWrite(UC_X86_REG_ESI, (void*)cpu->getCSI());
-	regWrite(UC_X86_REG_EDI, (void*)cpu->getCDI());
-	regWrite(UC_X86_REG_EBP, (void*)cpu->getCBP());
-	regWrite(UC_X86_REG_ESP, (void*)cpu->getCSP());
+	regWrite(UC_X86_REG_EAX, cpu->getCAX());
+	regWrite(UC_X86_REG_ECX, cpu->getCCX());
+	regWrite(UC_X86_REG_EBX, cpu->getCBX());
+	regWrite(UC_X86_REG_EDX, cpu->getCDX());
+	regWrite(UC_X86_REG_ESI, cpu->getCSI());
+	regWrite(UC_X86_REG_EDI, cpu->getCDI());
+	regWrite(UC_X86_REG_EBP, cpu->getCBP());
+	regWrite(UC_X86_REG_ESP, cpu->getCSP());
 #endif
 
-	regWrite(UC_X86_REG_GS, (void*)cpu->getGS());
-	regWrite(UC_X86_REG_CS, (void*)cpu->getCS());
-	regWrite(UC_X86_REG_FS, (void*)cpu->getFS());
-	regWrite(UC_X86_REG_SS, (void*)cpu->getSS());
+	regWrite(UC_X86_REG_GS, cpu->getGS());
+	regWrite(UC_X86_REG_CS, cpu->getCS());
+	regWrite(UC_X86_REG_FS, cpu->getFS());
+	regWrite(UC_X86_REG_SS, cpu->getSS());
 	
 }
 
