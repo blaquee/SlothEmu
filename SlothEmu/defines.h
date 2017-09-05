@@ -22,10 +22,11 @@
 #define VIP_INDEX		20
 #define ID_INDEX		21
 
+#define UC_PAGE_SIZE	0x4000
 #define PAGE_SHIFT              (12)
-#define PAGE_ALIGN(Va)          ((ULONG_PTR)((ULONG_PTR)(Va) & ~(PAGE_SIZE - 1)))
-#define BYTES_TO_PAGES(Size)    (((Size) >> PAGE_SHIFT) + (((Size) & (PAGE_SIZE - 1)) != 0))
-#define ROUND_TO_PAGES(Size)    (((ULONG_PTR)(Size) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
+#define PAGE_ALIGN(Va)          ((ULONG_PTR)((ULONG_PTR)(Va) & ~(UC_PAGE_SIZE - 1)))
+#define BYTES_TO_PAGES(Size)    (((Size) >> PAGE_SHIFT) + (((Size) & (UC_PAGE_SIZE - 1)) != 0))
+#define ROUND_TO_PAGES(Size)    (((ULONG_PTR)(Size) + UC_PAGE_SIZE - 1) & ~(UC_PAGE_SIZE - 1))
 
 #pragma pack(push, 1)
 struct SegmentDescriptor {

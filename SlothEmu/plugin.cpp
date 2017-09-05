@@ -40,7 +40,7 @@ bool ReadSelection(int hWindow)
 				_plugin_logputs("Failed to emulate the data");
 				return false;
 			}
-			if (!EmulateData(g_engine, data, lenSelection, false))
+			if (!EmulateData(g_engine, data, lenSelection, sel.start, false))
 			{
 				_plugin_logputs("Emulation finished");
 				return false;
@@ -56,6 +56,7 @@ static bool cbEmuStart(int argc, char* argv[])
 	// slothemu [init, start]
 	return true;
 }
+
 static bool cbTestCommand(int argc, char* argv[])
 {
     _plugin_logputs("[" PLUGIN_NAME "] Test command!");
@@ -69,6 +70,7 @@ static bool cbTestCommand(int argc, char* argv[])
 
 PLUG_EXPORT void CBINITDEBUG(CBTYPE cbType, PLUG_CB_INITDEBUG* info)
 {
+	isDebugging = true;
     _plugin_logprintf("[" PLUGIN_NAME "] Debugging of %s started!\n", info->szFileName);
 }
 

@@ -16,9 +16,6 @@ Capstone g_capstone;
 std::vector<MEMACCESSINFO> memoryAccessList;
 std::vector<DSTADDRINFO> destAddrInfoList;
 
-// some logic for emulated code
-bool isSegmentAccessed = false;
-
 bool InitEmuEngine()
 {
     //initialize the engine 
@@ -45,7 +42,6 @@ bool InitEmuEngine()
     return true;
 }
 
-
 bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start_addr, bool curCip = false)
 {
 
@@ -58,7 +54,6 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 	//clear our global vars
 	destAddrInfoList.clear();
 	memoryAccessList.clear();
-	isSegmentAccessed = false;
 
 
 	_plugin_logprintf("About to start emulating address: %08x with %u bytes\n", start_addr, dataLen);
@@ -160,20 +155,26 @@ bool AddHooks(uc_engine* uc)
 }
 
 // returns stack base and limit for a specified thread ID
-void EmuGetStackInfoForThread(duint threadId, STACKINFO* sinfo)
+void EmuGetStackInfoForThread(duint threadId, STACKINFO & sinfo)
 {
 	if (!isDebugging)
 	{
 		_plugin_logputs("Not debugging");
 		return;
 	}
+	PTEB teb = (PTEB)malloc(sizeof(TEB));
+	memset(teb, 0, sizeof(TEB));
+
 	// get stack info from teb
-	auto teb = (PTEB)DbgGetTebAddress(threadId);
+	auto teb_addr = DbgGetTebAddress(threadId);
+	auto pid = DbgGetProcessId();
+	DbgMemRead(teb_addr, teb, sizeof(TEB));
+	auto *tib = (NT_TIB*)(teb);
 	if (teb)
 	{
-		sinfo->base = (duint)teb->Tib.StackBase;
-		sinfo->limit = (duint)teb->Tib.StackLimit;
-		sinfo->tid = threadId;
+		sinfo.base = (duint)tib->StackBase;
+		sinfo.limit = (duint)tib->StackLimit;
+		sinfo.tid = threadId;
 	}
 }
 
@@ -183,8 +184,8 @@ void EmuGetCurrentStackLimit(duint & limit)
 	{
 		_plugin_logputs("Not debugging");
 	}
-	STACKINFO sinfo;
-	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
+	STACKINFO sinfo = { 0,0,0 };
+	EmuGetStackInfoForThread(DbgGetThreadId(), sinfo);
 	if (sinfo.limit)
 	{
 		limit = sinfo.limit;
@@ -197,8 +198,8 @@ void EmuGetCurrentStackBase(duint & base)
 	{
 		_plugin_logputs("Not debugging");
 	}
-	STACKINFO sinfo;
-	EmuGetStackInfoForThread(DbgGetThreadId(), &sinfo);
+	STACKINFO sinfo{ 0,0,0 };
+	EmuGetStackInfoForThread(DbgGetThreadId(), sinfo);
 	if (sinfo.base)
 	{
 		base = sinfo.base;
@@ -211,7 +212,7 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	if (!isDebugging)
 		return false;
 
-	auto regWrite = [&uc](int regid, void* value)
+	auto regWrite = [&](int regid, void* value)
 	{
 		uc_err err = uc_reg_write(uc, regid, value);
 		if (err != UC_ERR_OK)
@@ -233,14 +234,14 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	regWrite(UC_X86_REG_RSP, (void*)cpu->getCSP());
 	
 #else
-	regWrite(UC_X86_REG_EAX, (void*)cpu->getCAX());
-	regWrite(UC_X86_REG_ECX, (void*)cpu->getCCX());
-	regWrite(UC_X86_REG_EBX, (void*)cpu->getCBX());
-	regWrite(UC_X86_REG_EDX, (void*)cpu->getCDX());
-	regWrite(UC_X86_REG_ESI, (void*)cpu->getCSI());
-	regWrite(UC_X86_REG_EDI, (void*)cpu->getCDI());
-	regWrite(UC_X86_REG_EBP, (void*)cpu->getCBP());
-	regWrite(UC_X86_REG_ESP, (void*)cpu->getCSP());
+	regWrite(UC_X86_REG_EAX, cpu->getCAX());
+	regWrite(UC_X86_REG_ECX, cpu->getCCX());
+	regWrite(UC_X86_REG_EBX, cpu->getCBX());
+	regWrite(UC_X86_REG_EDX, cpu->getCDX());
+	regWrite(UC_X86_REG_ESI, cpu->getCSI());
+	regWrite(UC_X86_REG_EDI, cpu->getCDI());
+	regWrite(UC_X86_REG_EBP, cpu->getCBP());
+	regWrite(UC_X86_REG_ESP, cpu->getCSP());
 #endif
 
 	regWrite(UC_X86_REG_GS, (void*)cpu->getGS());
@@ -250,7 +251,7 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
 	
 }
 
-bool EmulateData(const char* data, size_t size, duint start_address, bool nullInit)
+bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint start_address, bool nullInit)
 {
 	if (!isDebugging)
 		return false;
@@ -310,47 +311,48 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool nullIn
 	duint r_ds;
 
 	//set up our hooks
-	err = uc_hook_add(g_engine, &hookcode, UC_HOOK_CODE, EmuHookCode, nullptr, start_address, start_address + size);
+	err = uc_hook_add(uc, &hookcode, UC_HOOK_CODE, EmuHookCode, nullptr, start_address, start_address + size);
 	if (err != UC_ERR_OK)
 	{
 		_plugin_logputs("Failed to register code hook");
 		return false;
 	}
-	err = uc_hook_add(g_engine, &hookMemInvalid, UC_HOOK_MEM_INVALID, EmuHookMemInvalid, nullptr, 1, 0);
+	err = uc_hook_add(uc, &hookMemInvalid, UC_HOOK_MEM_INVALID, EmuHookMemInvalid, nullptr, 1, 0);
 	if (err != UC_ERR_OK)
 	{
 		_plugin_logputs("Failed to register mem invalid hook");
 		return false;
 	}
-	err = uc_hook_add(g_engine, &hookMem, UC_HOOK_MEM_WRITE, EmuHookMem, nullptr, 1, 0);
+	err = uc_hook_add(uc, &hookMem, UC_HOOK_MEM_WRITE, EmuHookMem, nullptr, 1, 0);
 	if (err != UC_ERR_OK)
 	{
-		_plugin_logputs("Failed to register mem write");
+		_plugin_logputs("Failed to register mem write\n");
 		return false;
 	}
 
 	//stack limit
 	duint slimit;
 	EmuGetCurrentStackLimit(slimit);
-	_plugin_logprintf("Stack Limit: %u", slimit);
+	_plugin_logprintf("Stack Limit: %x\n", slimit);
 
 	// map our stack and point to CSP
 	auto stack_addr = cpu.getCSP();
 	auto stack_aligned = PAGE_ALIGN(stack_addr);
-	_plugin_logprintf("Aligned stack address: %u", stack_aligned);
-	err = uc_mem_map_ptr(g_engine, stack_aligned, slimit, UC_PROT_READ | UC_PROT_WRITE, &stack_addr);
+	_plugin_logprintf("Aligned stack address: %d\n", stack_aligned);
+	err = uc_mem_map_ptr(uc, stack_aligned, ROUND_TO_PAGES(slimit), UC_PROT_READ | UC_PROT_WRITE, &stack_addr);
 	if (err != UC_ERR_OK)
 	{
-		_plugin_logputs("Memory Map for stack failed");
+		_plugin_logputs("Memory Map for stack failed\n");
 		return false;
 	}
 
 	//map memory for our code
 	auto aligned_address = PAGE_ALIGN(start_address);
-	duint filler_size = start_address - aligned_address;
-	err = uc_mem_map(g_engine, aligned_address, BYTES_TO_PAGES(size + filler_size), UC_PROT_ALL);
+	size_t filler_size = start_address - aligned_address;
+	err = uc_mem_map(uc, aligned_address, ROUND_TO_PAGES(size + filler_size), UC_PROT_ALL);
 	if (err != UC_ERR_OK)
 	{
+		_plugin_logprintf("MAP ERROR: %s\n", uc_strerror(uc_errno(uc)));
 		_plugin_logputs("Memory map failed for code");
 		return false;
 	}
@@ -358,7 +360,7 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool nullIn
 	char *filler = (char*)malloc(filler_size);
 	memset(filler, 0x90, filler_size);
 	//filler for code
-	err = uc_mem_write(g_engine, aligned_address, filler, filler_size);
+	err = uc_mem_write(uc, aligned_address, filler, filler_size);
 	if (err != UC_ERR_OK)
 	{
 		_plugin_logputs("Failed to write filler bytes");
@@ -366,7 +368,7 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool nullIn
 		return false;
 	}
 	//write code
-	err = uc_mem_write(g_engine, aligned_address + filler_size, data, size);
+	err = uc_mem_write(uc, aligned_address + filler_size, data, size);
 	if (err != UC_ERR_OK)
 	{
 		_plugin_logputs("writing code failed");
@@ -375,14 +377,14 @@ bool EmulateData(const char* data, size_t size, duint start_address, bool nullIn
 	}
 
 	// setup the registers
-	if (!EmuSetupRegs(g_engine, &cpu))
+	if (!EmuSetupRegs(uc, &cpu))
 	{
 		_plugin_logputs("Register setups failed");
 		return false;
 	}
 
 	// STARRRRTTTT
-	err = uc_emu_start(g_engine, start_address, start_address + size, 0, 0);
+	err = uc_emu_start(uc, start_address, start_address + size, 0, 0);
 	if (err != UC_ERR_OK)
 	{
 		_plugin_logputs("Something weird happend with emulation start");

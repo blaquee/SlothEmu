@@ -118,5 +118,5 @@ void EmuGetCurrentStackLimit(duint & limit);
 void EmuGetCurrentStackBase(duint & base);
 
 bool EmuSetupRegs(uc_engine* uc, Cpu* cpu);
-bool EmulateData(uc_engine* eng, unsigned char* data, size_t len, bool zeroRegs);
+bool EmulateData(uc_engine* uc, const unsigned char* data, size_t len, duint start, bool zeroRegs);
 void CleanupEmuEngine();
