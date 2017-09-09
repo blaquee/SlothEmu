@@ -31,12 +31,12 @@ bool InitEmuEngine()
 #endif
     if (err != UC_ERR_OK)
     {
-        _plugin_logputs("Failed to load emu engine");
+        GuiAddLogMessage("Failed to load emu engine");
         g_EngineInit = false;
         return false;
     }
     g_EngineInit = true;
-    _plugin_logputs("Emulation Engine Started!");
+    GuiAddLogMessage("Emulation Engine Started!");
 
     //prepare the environment
     return true;
@@ -47,7 +47,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 
     if (!isDebugging)
     {
-        _plugin_logputs("not debugging..stopping");
+        GuiAddLogMessage("not debugging..stopping");
         return false;
     }
 
@@ -60,7 +60,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 
     if (!g_EngineInit || !g_engine)
     {
-        _plugin_logputs("Engine not started!");
+        GuiAddLogMessage("Engine not started!");
         return false;
     }
 
@@ -70,7 +70,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
         if (!g_capstone.Disassemble(start_addr, data + index))
         {
             // try reading forward: DANGER
-            _plugin_logputs("Couldn't disassemble start of data, trying next byte..");
+            GuiAddLogMessage("Couldn't disassemble start of data, trying next byte..");
             start_addr++;
             index++;
             continue;
@@ -78,7 +78,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
 
         if (g_capstone.Size() == 0)
         {
-            _plugin_logputs("Could not disassemble code");
+            GuiAddLogMessage("Could not disassemble code");
             return false;
         }
 
@@ -90,7 +90,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
         if (g_capstone.InGroup(CS_GRP_CALL))
         {
             DSTADDRINFO dinfo;
-            _plugin_logputs("Call instruction reached..");
+            GuiAddLogMessage("Call instruction reached..");
             for (auto i = 0; i < g_capstone.OpCount(); ++i)
             {
                 duint dest = g_capstone.ResolveOpValue(i, [](x86_reg)->size_t
@@ -118,7 +118,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
         else if (g_capstone.InGroup(CS_GRP_JUMP))
         {
             DSTADDRINFO dinfo;
-            _plugin_logputs("jmp instruction reached..");
+            GuiAddLogMessage("jmp instruction reached..");
             for (auto i = 0; i < g_capstone.OpCount(); ++i)
             {
                 duint dest = g_capstone.ResolveOpValue(i, [](x86_reg)->size_t
@@ -159,7 +159,7 @@ void EmuGetStackInfoForThread(duint threadId, STACKINFO & sinfo)
 {
     if (!isDebugging)
     {
-        _plugin_logputs("Not debugging");
+        GuiAddLogMessage("Not debugging");
         return;
     }
     PTEB teb = (PTEB)malloc(sizeof(TEB));
@@ -182,7 +182,7 @@ void EmuGetCurrentStackLimit(duint & limit)
 {
     if (!isDebugging)
     {
-        _plugin_logputs("Not debugging");
+        GuiAddLogMessage("Not debugging");
     }
     STACKINFO sinfo = { 0,0,0 };
     EmuGetStackInfoForThread(DbgGetThreadId(), sinfo);
@@ -196,7 +196,7 @@ void EmuGetCurrentStackBase(duint & base)
 {
     if (!isDebugging)
     {
-        _plugin_logputs("Not debugging");
+        GuiAddLogMessage("Not debugging");
     }
     STACKINFO sinfo{ 0,0,0 };
     EmuGetStackInfoForThread(DbgGetThreadId(), sinfo);
@@ -217,7 +217,7 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
         uc_err err = uc_reg_write(uc, regid, &value);
         if (err != UC_ERR_OK)
         {
-            _plugin_logputs("Register write failed");
+            GuiAddLogMessage("Register write failed");
             return false;
         }
         return true;
@@ -314,36 +314,36 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     err = uc_hook_add(uc, &hookcode, UC_HOOK_CODE, EmuHookCode, nullptr, start_address, start_address + size);
     if (err != UC_ERR_OK)
     {
-        _plugin_logputs("Failed to register code hook");
+        GuiAddLogMessage("Failed to register code hook");
         return false;
     }
     err = uc_hook_add(uc, &hookMemInvalid, UC_HOOK_MEM_INVALID, EmuHookMemInvalid, nullptr, 1, 0);
     if (err != UC_ERR_OK)
     {
-        _plugin_logputs("Failed to register mem invalid hook");
+        GuiAddLogMessage("Failed to register mem invalid hook");
         return false;
     }
     err = uc_hook_add(uc, &hookMem, UC_HOOK_MEM_WRITE, EmuHookMem, nullptr, 1, 0);
     if (err != UC_ERR_OK)
     {
-        _plugin_logputs("Failed to register mem write\n");
+        GuiAddLogMessage("Failed to register mem write\n");
         return false;
     }
 
     //stack limit
-    duint slimit;
-    EmuGetCurrentStackLimit(slimit);
+    duint slimit = 0x1000;
+    //EmuGetCurrentStackLimit(slimit);
     _plugin_logprintf("Stack Limit: %x\n", slimit);
 
     // map our stack and point to CSP
     auto stack_addr = cpu.getCSP();
     auto stack_aligned = PAGE_ALIGN(stack_addr);
-    _plugin_logprintf("Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, ROUND_TO_PAGES(slimit));
-    err = uc_mem_map_ptr(uc, stack_aligned, BYTES_TO_PAGES(slimit), UC_PROT_READ | UC_PROT_WRITE, &stack_addr);
+    //_plugin_logprintf("Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, BYTES_TO_PAGES(slimit));
+    err = uc_mem_map(uc, stack_aligned, BYTES_TO_PAGES(slimit), UC_PROT_READ | UC_PROT_WRITE);
     if (err != UC_ERR_OK)
     {
-        _plugin_logprintf("MAP ERROR: %s\n", uc_strerror(uc_errno(uc)));
-        _plugin_logputs("Memory Map for stack failed\n");
+        _plugin_logprintf("STACK MAP ERROR: %s\n", uc_strerror(uc_errno(uc)));
+        GuiAddLogMessage("Memory Map for stack failed\n");
         return false;
     }
 
@@ -354,7 +354,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     if (err != UC_ERR_OK)
     {
         _plugin_logprintf("MAP ERROR: %s\n", uc_strerror(uc_errno(uc)));
-        _plugin_logputs("Memory map failed for code");
+        GuiAddLogMessage("Memory map failed for code");
         return false;
     }
 
@@ -364,7 +364,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     err = uc_mem_write(uc, aligned_address, filler, filler_size);
     if (err != UC_ERR_OK)
     {
-        _plugin_logputs("Failed to write filler bytes");
+        GuiAddLogMessage("Failed to write filler bytes");
         free(filler);
         return false;
     }
@@ -372,7 +372,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     err = uc_mem_write(uc, aligned_address + filler_size, data, size);
     if (err != UC_ERR_OK)
     {
-        _plugin_logputs("writing code failed");
+        GuiAddLogMessage("writing code failed");
         free(filler);
         return false;
     }
@@ -380,7 +380,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     // setup the registers
     if (!EmuSetupRegs(uc, &cpu))
     {
-        _plugin_logputs("Register setups failed");
+        GuiAddLogMessage("Register setups failed");
         return false;
     }
 
@@ -388,7 +388,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     err = uc_emu_start(uc, start_address, start_address + size, 0, 0);
     if (err != UC_ERR_OK)
     {
-        _plugin_logputs("Something weird happened with emulation start");
+        GuiAddLogMessage("Something weird happened with emulation start");
     }
 
     return true;
@@ -400,5 +400,6 @@ void CleanupEmuEngine()
     if (g_engine)
     {
         uc_close(g_engine);
+        g_engine = NULL;
     }
 }

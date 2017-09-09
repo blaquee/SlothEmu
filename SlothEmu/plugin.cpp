@@ -20,7 +20,7 @@ bool ReadSelection(int hWindow)
 {
     if (!DbgIsDebugging())
     {
-        _plugin_logputs("[" PLUGIN_NAME "] Not Debugging");
+        GuiAddLogMessage("[" PLUGIN_NAME "] Not Debugging");
         return false;
     }
 
@@ -37,12 +37,12 @@ bool ReadSelection(int hWindow)
         {
             if (!PrepareDataToEmulate(data, lenSelection, sel.start, false))
             {
-                _plugin_logputs("Failed to emulate the data");
+                GuiAddLogMessage("Failed to emulate the data");
                 return false;
             }
             if (!EmulateData(g_engine, data, lenSelection, sel.start, false))
             {
-                _plugin_logputs("Emulation finished");
+                GuiAddLogMessage("Emulation finished");
                 return false;
             }
         }
@@ -59,10 +59,10 @@ static bool cbEmuStart(int argc, char* argv[])
 
 static bool cbTestCommand(int argc, char* argv[])
 {
-    _plugin_logputs("[" PLUGIN_NAME "] Test command!");
+    GuiAddLogMessage("[" PLUGIN_NAME "] Test command!");
     char line[GUI_MAX_LINE_SIZE] = "";
     if (!GuiGetLineWindow("test", line))
-        _plugin_logputs("[" PLUGIN_NAME "] Cancel pressed!");
+        GuiAddLogMessage("[" PLUGIN_NAME "] Cancel pressed!");
     else
         _plugin_logprintf("[" PLUGIN_NAME "] Line: \"%s\"\n", line);
     return true;
@@ -77,7 +77,7 @@ PLUG_EXPORT void CBINITDEBUG(CBTYPE cbType, PLUG_CB_INITDEBUG* info)
 PLUG_EXPORT void CBSTOPDEBUG(CBTYPE cbType, PLUG_CB_STOPDEBUG* info)
 {
     isDebugging = false;
-    _plugin_logputs("[" PLUGIN_NAME "] Debugging stopped!");
+    GuiAddLogMessage("[" PLUGIN_NAME "] Debugging stopped!");
     CleanupEmuEngine();
 }
 
@@ -99,11 +99,11 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 bool pluginInit(PLUG_INITSTRUCT* initStruct)
 {
     if (!_plugin_registercommand(pluginHandle, PLUGIN_NAME, cbTestCommand, false))
-        _plugin_logputs("[" PLUGIN_NAME "] Error registering the \"" PLUGIN_NAME "\" command!");
+        GuiAddLogMessage("[" PLUGIN_NAME "] Error registering the \"" PLUGIN_NAME "\" command!");
 
     if (!InitEmuEngine())
     {
-        _plugin_logputs("Emulation Engine failed to start, failing plugin load");
+        GuiAddLogMessage("Emulation Engine failed to start, failing plugin load");
         return false;
     }
     return true; //Return false to cancel loading the plugin.
