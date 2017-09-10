@@ -2,6 +2,13 @@
 
 #include <windows.h>
 
+
+#define UC_PAGE_SIZE	0x1000
+#define PAGE_SHIFT              (12)
+#define PAGE_ALIGN(Va)          ((ULONG_PTR)((ULONG_PTR)(Va) & ~(UC_PAGE_SIZE - 1)))
+#define BYTES_TO_PAGES(Size)    (((Size) >> PAGE_SHIFT) + (((Size) & (UC_PAGE_SIZE - 1)) != 0))
+#define ROUND_TO_PAGES(Size)    (((ULONG_PTR)(Size) + UC_PAGE_SIZE - 1) & ~(UC_PAGE_SIZE - 1))
+
 // borrowed from pegasus project
 #define CF_INDEX	0
 #define PF_INDEX	2
@@ -22,11 +29,6 @@
 #define VIP_INDEX		20
 #define ID_INDEX		21
 
-#define UC_PAGE_SIZE	0x4000
-#define PAGE_SHIFT              (12)
-#define PAGE_ALIGN(Va)          ((ULONG_PTR)((ULONG_PTR)(Va) & ~(UC_PAGE_SIZE - 1)))
-#define BYTES_TO_PAGES(Size)    (((Size) >> PAGE_SHIFT) + (((Size) & (UC_PAGE_SIZE - 1)) != 0))
-#define ROUND_TO_PAGES(Size)    (((ULONG_PTR)(Size) + UC_PAGE_SIZE - 1) & ~(UC_PAGE_SIZE - 1))
 
 #pragma pack(push, 1)
 struct SegmentDescriptor {

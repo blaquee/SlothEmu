@@ -20,10 +20,10 @@ bool EmuHookMemInvalid(uc_engine* uc, uc_mem_type type, duint address, int size,
         return false;
     case UC_MEM_WRITE_UNMAPPED:
     case UC_MEM_READ_UNMAPPED:
-        _plugin_logputs("Unmapped memory reached");
+        GuiAddLogMessage("Unmapped memory reached");
         return false;
     case UC_MEM_FETCH_UNMAPPED:
-        _plugin_logputs("Unmapped fetched memory reached");
+        GuiAddLogMessage("Unmapped fetched memory reached");
         return false;
     }
     return true;
