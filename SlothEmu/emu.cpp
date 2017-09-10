@@ -249,7 +249,7 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
     regWrite(UC_X86_REG_CS, cpu->getCS());
     regWrite(UC_X86_REG_FS, cpu->getFS());
     regWrite(UC_X86_REG_SS, cpu->getSS());
-
+    return true;
 }
 
 bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint start_address, bool nullInit)
@@ -355,12 +355,12 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
 
     //map memory for our code
     auto aligned_address = PAGE_ALIGN(start_address);
-    size_t filler_size = start_address - aligned_address;
-    duint size_aligned = PAGE_ALIGN(size);
+    duint filler_size = start_address - aligned_address;
+    duint total_size = filler_size + size;
     memset(msg, 0, 256);
-    sprintf_s(msg, "Code Address Aligned: %X\t Code Size Aligned: %X\n", aligned_address, PAGE_ALIGN(size + filler_size));
+    sprintf_s(msg, "Code Address Aligned: %X\t Code Size Aligned: %X\n", aligned_address, ROUND_TO_PAGES(total_size));
     GuiAddLogMessage(msg);
-    err = uc_mem_map(uc, aligned_address, PAGE_ALIGN(size + filler_size), UC_PROT_ALL);
+    err = uc_mem_map(uc, aligned_address, ROUND_TO_PAGES(total_size), UC_PROT_ALL);
     if (err != UC_ERR_OK)
     {
         memset(msg, 0, 256);

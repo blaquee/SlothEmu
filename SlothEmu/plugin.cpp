@@ -71,6 +71,10 @@ static bool cbTestCommand(int argc, char* argv[])
 PLUG_EXPORT void CBINITDEBUG(CBTYPE cbType, PLUG_CB_INITDEBUG* info)
 {
     isDebugging = true;
+    if (!InitEmuEngine())
+    {
+        GuiAddLogMessage("Engine not started started");
+    }
     _plugin_logprintf("[" PLUGIN_NAME "] Debugging of %s started!\n", info->szFileName);
 }
 
@@ -98,6 +102,7 @@ PLUG_EXPORT void CBMENUENTRY(CBTYPE cbType, PLUG_CB_MENUENTRY* info)
 //Initialize your plugin data here.
 bool pluginInit(PLUG_INITSTRUCT* initStruct)
 {
+    isDebugging = true;
     if (!_plugin_registercommand(pluginHandle, PLUGIN_NAME, cbTestCommand, false))
         GuiAddLogMessage("[" PLUGIN_NAME "] Error registering the \"" PLUGIN_NAME "\" command!");
 
