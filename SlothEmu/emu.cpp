@@ -50,14 +50,15 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
         GuiAddLogMessage("not debugging..stopping");
         return false;
     }
-
+    char msg[256];
+    memset(msg, 0, 256);
     //clear our global vars
     destAddrInfoList.clear();
     memoryAccessList.clear();
 
 
-    _plugin_logprintf("About to start emulating address: %08x with %u bytes\n", start_addr, dataLen);
-
+    sprintf_s(msg, "About to start emulating address: %08x with %u bytes\n", start_addr, dataLen);
+    GuiAddLogMessage(msg);
     if (!g_EngineInit || !g_engine)
     {
         GuiAddLogMessage("Engine not started!");
@@ -82,8 +83,8 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
             return false;
         }
 
-        _plugin_logprintf("Instruction: %08X %s\n", start_addr, g_capstone.InstructionText(false).c_str());
-
+        sprintf_s(msg, "Instruction: %08X %s\n", start_addr, g_capstone.InstructionText(false).c_str());
+        GuiAddLogMessage(msg);
         // Lets determine what needs to be prepared for the env
         // Here we determine the destination for any branches outside of emulated region.
         // Data accesses will be handled by hooks later in emulation
@@ -97,7 +98,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
                 {
                     return 0;
                 });
-                _plugin_logprintf("Destination to: %08X\n", dest);
+                //_plugin_logprintf("Destination to: %08X\n", dest);
 
                 // is it a syscall?
                 char modName[256];
@@ -109,7 +110,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
                 dinfo.to = dest;
                 dinfo.toMainMod = (party == 1) ? 0 : 1;
 
-                _plugin_logprintf("Calling to module: %s\tIs call to system module: %d\n", modName, dinfo.toMainMod);
+                //_plugin_logprintf("Calling to module: %s\tIs call to system module: %d\n", modName, dinfo.toMainMod);
                 // add it to our list of destination addresses
                 destAddrInfoList.push_back(dinfo);
             }
@@ -125,7 +126,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
                 {
                     return 0;
                 });
-                _plugin_logprintf("Destination to: %08X\n", dest);
+                //_plugin_logprintf("Destination to: %08X\n", dest);
 
                 // is it a syscall?
                 char modName[256];
@@ -136,7 +137,7 @@ bool PrepareDataToEmulate(const unsigned char* data, size_t dataLen, duint start
                 dinfo.from = start_addr;
                 dinfo.to = dest;
                 dinfo.toMainMod = (party == 1) ? 0 : 1;
-                _plugin_logprintf("Jump to module: %s\tIs jump to system: %d\n", modName, dinfo.toMainMod);
+                //_plugin_logprintf("Jump to module: %s\tIs jump to system: %d\n", modName, dinfo.toMainMod);
 
                 destAddrInfoList.push_back(dinfo);
             }
@@ -256,6 +257,8 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     if (!isDebugging)
         return false;
 
+    char msg[256];
+    memset(msg, 0, 256);
     uc_err err;
     // set up current registers and stack mem
     Cpu cpu;
@@ -324,16 +327,25 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     //stack limit
     duint slimit = 0x1000;
     //EmuGetCurrentStackLimit(slimit);
-    _plugin_logprintf("Stack Limit: %x\n", slimit);
+    sprintf_s(msg, "Stack Limit: %x\n", slimit, _TRUNCATE);
+    GuiAddLogMessage(msg);
+    //_plugin_logprintf("Stack Limit: %x\n", slimit);
 
     // map our stack and point to CSP
     auto stack_addr = cpu.getCSP();
     auto stack_aligned = PAGE_ALIGN(stack_addr);
+
+    memset(msg, 0, 256);
+    sprintf_s(msg, "Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, PAGE_ALIGN(slimit), _TRUNCATE);
+    GuiAddLogMessage(msg);
     //_plugin_logprintf("Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, BYTES_TO_PAGES(slimit));
-    err = uc_mem_map(uc, stack_aligned, BYTES_TO_PAGES(slimit), UC_PROT_READ | UC_PROT_WRITE);
+    err = uc_mem_map(uc, stack_aligned, PAGE_ALIGN(slimit), UC_PROT_READ | UC_PROT_WRITE);
     if (err != UC_ERR_OK)
     {
-        _plugin_logprintf("STACK MAP ERROR: %s\n", uc_strerror(uc_errno(uc)));
+        memset(msg, 0, 256);
+        sprintf_s(msg, "STACK MAP ERROR: %s\n", uc_strerror(uc_errno(uc)), _TRUNCATE);
+        GuiAddLogMessage(msg);
+        //_plugin_logprintf("STACK MAP ERROR: %s\n", uc_strerror(uc_errno(uc)));
         GuiAddLogMessage("Memory Map for stack failed\n");
         return false;
     }
@@ -341,10 +353,16 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     //map memory for our code
     auto aligned_address = PAGE_ALIGN(start_address);
     size_t filler_size = start_address - aligned_address;
-    err = uc_mem_map(uc, aligned_address, BYTES_TO_PAGES(size + filler_size), UC_PROT_ALL);
+    memset(msg, 0, 256);
+    sprintf_s(msg, "Code Address Aligned: %X\t Code Size Aligned: %X\n", aligned_address, PAGE_ALIGN(size + filler_size));
+    GuiAddLogMessage(msg);
+    err = uc_mem_map(uc, aligned_address, PAGE_ALIGN(size + filler_size), UC_PROT_ALL);
     if (err != UC_ERR_OK)
     {
-        _plugin_logprintf("MAP ERROR: %s\n", uc_strerror(uc_errno(uc)));
+        memset(msg, 0, 256);
+        sprintf_s(msg, "MAP MEMORY ERROR: %s\n", uc_strerror(uc_errno(uc)), _TRUNCATE);
+        GuiAddLogMessage(msg);
+        //_plugin_logprintf("MAP MEMORY ERROR: %s\n", uc_strerror(uc_errno(uc)));
         GuiAddLogMessage("Memory map failed for code");
         return false;
     }
