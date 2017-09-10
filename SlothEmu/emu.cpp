@@ -301,15 +301,6 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     cpu.setEFLAGS(Script::Register::GetCFLAGS());
     cpu.setCIP(start_address);
 
-    // TODO: set up segment selectors
-    uc_x86_mmr gdtr;
-    duint r_cs;
-    duint r_ss;
-    duint r_fs;
-    duint r_gs;
-    duint r_es;
-    duint r_ds;
-
     //set up our hooks
     err = uc_hook_add(uc, &hookcode, UC_HOOK_CODE, EmuHookCode, nullptr, start_address, start_address + size);
     if (err != UC_ERR_OK)
