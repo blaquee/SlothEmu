@@ -266,42 +266,45 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     // For segment registers (probably switch to this eventually)
     REGDUMP rDump;
     DbgGetRegDump(&rDump);
-
+    if (!nullInit)
+    {
 #ifdef _WIN64
-    cpu.setCAX(Script::Register::GetRAX());
-    cpu.setCBX(Script::Register::GetRBX());
-    cpu.setCCX(Script::Register::GetRCX());
-    cpu.setCDI(Script::Register::GetRDI());
-    cpu.setCDX(Script::Register::GetRDX());
-    cpu.setCSI(Script::Register::GetRSI());
-    cpu.setCSP(Script::Register::GetRSP());
-    cpu.setCBP(Script::Register::GetRBP());
+        cpu.setCAX(Script::Register::GetRAX());
+        cpu.setCBX(Script::Register::GetRBX());
+        cpu.setCCX(Script::Register::GetRCX());
+        cpu.setCDI(Script::Register::GetRDI());
+        cpu.setCDX(Script::Register::GetRDX());
+        cpu.setCSI(Script::Register::GetRSI());
+        cpu.setCSP(Script::Register::GetRSP());
+        cpu.setCBP(Script::Register::GetRBP());
 
-    cpu.setR8(Script::Register::GetR8());
-    cpu.setR9(Script::Register::GetR9());
-    cpu.setR10(Script::Register::GetR10());
-    cpu.setR11(Script::Register::GetR11());
-    cpu.setR12(Script::Register::GetR12());
-    cpu.setR13(Script::Register::GetR13());
-    cpu.setR14(Script::Register::GetR14());
-    cpu.setR15(Script::Register::GetR15());
+        cpu.setR8(Script::Register::GetR8());
+        cpu.setR9(Script::Register::GetR9());
+        cpu.setR10(Script::Register::GetR10());
+        cpu.setR11(Script::Register::GetR11());
+        cpu.setR12(Script::Register::GetR12());
+        cpu.setR13(Script::Register::GetR13());
+        cpu.setR14(Script::Register::GetR14());
+        cpu.setR15(Script::Register::GetR15());
 #else
-    cpu.setCAX(Script::Register::GetEAX());
-    cpu.setCBX(Script::Register::GetEBX());
-    cpu.setCCX(Script::Register::GetECX());
-    cpu.setCDI(Script::Register::GetEDI());
-    cpu.setCDX(Script::Register::GetEDX());
-    cpu.setCSI(Script::Register::GetESI());
-    cpu.setCSP(Script::Register::GetESP());
-    cpu.setCBP(Script::Register::GetEBP());
+        cpu.setCAX(Script::Register::GetEAX());
+        cpu.setCBX(Script::Register::GetEBX());
+        cpu.setCCX(Script::Register::GetECX());
+        cpu.setCDI(Script::Register::GetEDI());
+        cpu.setCDX(Script::Register::GetEDX());
+        cpu.setCSI(Script::Register::GetESI());
+        cpu.setCSP(Script::Register::GetESP());
+        cpu.setCBP(Script::Register::GetEBP());
 #endif
-    // segment
-    cpu.setCS(rDump.regcontext.cs);
-    cpu.setGS(rDump.regcontext.gs);
-    cpu.setFS(rDump.regcontext.fs);
-    cpu.setSS(rDump.regcontext.ss);
+        // segment
+        cpu.setCS(rDump.regcontext.cs);
+        cpu.setGS(rDump.regcontext.gs);
+        cpu.setFS(rDump.regcontext.fs);
+        cpu.setSS(rDump.regcontext.ss);
 
-    cpu.setEFLAGS(Script::Register::GetCFLAGS());
+        cpu.setEFLAGS(Script::Register::GetCFLAGS());
+    }
+
     cpu.setCIP(start_address);
 
     //set up our hooks
@@ -327,7 +330,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     //stack limit
     duint slimit = 0x1000;
     //EmuGetCurrentStackLimit(slimit);
-    sprintf_s(msg, "Stack Limit: %x\n", slimit, _TRUNCATE);
+    sprintf_s(msg, "Stack Limit: %x\n", slimit);
     GuiAddLogMessage(msg);
     //_plugin_logprintf("Stack Limit: %x\n", slimit);
 
@@ -336,7 +339,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     auto stack_aligned = PAGE_ALIGN(stack_addr);
 
     memset(msg, 0, 256);
-    sprintf_s(msg, "Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, PAGE_ALIGN(slimit), _TRUNCATE);
+    sprintf_s(msg, "Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, PAGE_ALIGN(slimit));
     GuiAddLogMessage(msg);
     //_plugin_logprintf("Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, BYTES_TO_PAGES(slimit));
     err = uc_mem_map(uc, stack_aligned, PAGE_ALIGN(slimit), UC_PROT_READ | UC_PROT_WRITE);
@@ -353,6 +356,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     //map memory for our code
     auto aligned_address = PAGE_ALIGN(start_address);
     size_t filler_size = start_address - aligned_address;
+    duint size_aligned = PAGE_ALIGN(size);
     memset(msg, 0, 256);
     sprintf_s(msg, "Code Address Aligned: %X\t Code Size Aligned: %X\n", aligned_address, PAGE_ALIGN(size + filler_size));
     GuiAddLogMessage(msg);
@@ -360,7 +364,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     if (err != UC_ERR_OK)
     {
         memset(msg, 0, 256);
-        sprintf_s(msg, "MAP MEMORY ERROR: %s\n", uc_strerror(uc_errno(uc)), _TRUNCATE);
+        sprintf_s(msg, "MAP MEMORY ERROR: %s\n", uc_strerror(uc_errno(uc)));
         GuiAddLogMessage(msg);
         //_plugin_logprintf("MAP MEMORY ERROR: %s\n", uc_strerror(uc_errno(uc)));
         GuiAddLogMessage("Memory map failed for code");
