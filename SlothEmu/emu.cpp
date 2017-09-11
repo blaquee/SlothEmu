@@ -245,10 +245,10 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
     regWrite(UC_X86_REG_ESP, cpu->getCSP());
 #endif
 
-    regWrite(UC_X86_REG_GS, (int)cpu->getGS());
-    regWrite(UC_X86_REG_CS, (int)cpu->getCS());
-    regWrite(UC_X86_REG_FS, (int)cpu->getFS());
-    regWrite(UC_X86_REG_SS, (int)cpu->getSS());
+    regWrite(UC_X86_REG_GS, cpu->getGS());
+    regWrite(UC_X86_REG_CS, cpu->getCS());
+    regWrite(UC_X86_REG_FS, cpu->getFS());
+    regWrite(UC_X86_REG_SS, cpu->getSS());
     return true;
 }
 

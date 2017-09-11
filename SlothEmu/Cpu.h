@@ -47,12 +47,12 @@ private:
 	duint IF;
 	duint DF;
 	duint OF;
-	unsigned short GS;
-	unsigned short FS;
-	unsigned short ES;
-	unsigned short DS;
-	unsigned short CS;
-	unsigned short SS;
+	duint GS;
+	duint FS;
+	duint ES;
+	duint DS;
+	duint CS;
+	duint SS;
 	duint LastError;
 	duint DR0;
 	duint DR1;
@@ -184,29 +184,29 @@ public:
 
 	void setOF(const duint & value);
 
-	unsigned short getGS() const;
+    duint getGS() const;
 
-	void setGS(const unsigned short & value);
+	void setGS(const duint & value);
 
-	unsigned short getFS() const;
+    duint getFS() const;
 
-	void setFS(const unsigned short & value);
+	void setFS(const duint & value);
 
-	unsigned short getES() const;
+    duint getES() const;
 
-	void setES(const unsigned short & value);
+	void setES(const duint & value);
 
-	unsigned short getDS() const;
+    duint getDS() const;
 
-	void setDS(const unsigned short & value);
+	void setDS(const duint & value);
 
-	unsigned short getCS() const;
+    duint getCS() const;
 
-	void setCS(const unsigned short & value);
+	void setCS(const duint & value);
 
-	unsigned short getSS() const;
+    duint getSS() const;
 
-	void setSS(const unsigned short & value);
+	void setSS(const duint & value);
 
 	duint getLastError() const;
 

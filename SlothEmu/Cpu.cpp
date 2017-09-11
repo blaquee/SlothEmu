@@ -816,7 +816,7 @@ void Cpu::setOF(const duint & the_value)
 //      This method xxxxxx
 //======================================================================
 
-unsigned short Cpu::getGS() const
+duint Cpu::getGS() const
 {
     return GS;
 }
@@ -829,7 +829,7 @@ unsigned short Cpu::getGS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setGS(const unsigned short & value)
+void Cpu::setGS(const duint & value)
 {
     GS = value;
 }
@@ -842,7 +842,7 @@ void Cpu::setGS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-unsigned short Cpu::getFS() const
+duint Cpu::getFS() const
 {
     return FS;
 }
@@ -855,7 +855,7 @@ unsigned short Cpu::getFS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setFS(const unsigned short & value)
+void Cpu::setFS(const duint & value)
 {
     FS = value;
 }
@@ -868,7 +868,7 @@ void Cpu::setFS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-unsigned short Cpu::getES() const
+duint Cpu::getES() const
 {
     return ES;
 }
@@ -881,7 +881,7 @@ unsigned short Cpu::getES() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setES(const unsigned short & value)
+void Cpu::setES(const duint & value)
 {
     ES = value;
 }
@@ -894,7 +894,7 @@ void Cpu::setES(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-unsigned short Cpu::getDS() const
+duint Cpu::getDS() const
 {
     return DS;
 }
@@ -907,7 +907,7 @@ unsigned short Cpu::getDS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setDS(const unsigned short & value)
+void Cpu::setDS(const duint & value)
 {
     DS = value;
 }
@@ -920,7 +920,7 @@ void Cpu::setDS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-unsigned short Cpu::getCS() const
+duint Cpu::getCS() const
 {
     return CS;
 }
@@ -933,7 +933,7 @@ unsigned short Cpu::getCS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setCS(const unsigned short & value)
+void Cpu::setCS(const duint & value)
 {
     CS = value;
 }
@@ -946,7 +946,7 @@ void Cpu::setCS(const unsigned short & value)
 //      This method xxxxxx
 //======================================================================
 
-unsigned short Cpu::getSS() const
+duint Cpu::getSS() const
 {
     return SS;
 }
@@ -959,7 +959,7 @@ unsigned short Cpu::getSS() const
 //      This method xxxxxx
 //======================================================================
 
-void Cpu::setSS(const unsigned short & value)
+void Cpu::setSS(const duint & value)
 {
     SS = value;
 }
