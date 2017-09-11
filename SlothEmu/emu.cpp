@@ -245,10 +245,10 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
     regWrite(UC_X86_REG_ESP, cpu->getCSP());
 #endif
 
-    regWrite(UC_X86_REG_GS, cpu->getGS());
-    regWrite(UC_X86_REG_CS, cpu->getCS());
-    regWrite(UC_X86_REG_FS, cpu->getFS());
-    regWrite(UC_X86_REG_SS, cpu->getSS());
+    regWrite(UC_X86_REG_GS, (int)cpu->getGS());
+    regWrite(UC_X86_REG_CS, (int)cpu->getCS());
+    regWrite(UC_X86_REG_FS, (int)cpu->getFS());
+    regWrite(UC_X86_REG_SS, (int)cpu->getSS());
     return true;
 }
 
@@ -355,12 +355,12 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
 
     //map memory for our code
     auto aligned_address = PAGE_ALIGN(start_address);
-    duint filler_size = start_address - aligned_address;
-    duint total_size = filler_size + size;
+    //duint filler_size = start_address - aligned_address;
+    //duint total_size = filler_size + size;
     memset(msg, 0, 256);
-    sprintf_s(msg, "Code Address Aligned: %X\t Code Size Aligned: %X\n", aligned_address, ROUND_TO_PAGES(total_size));
+    sprintf_s(msg, "Code Address Aligned: %X\nCode Size Aligned: %X\n", aligned_address, ROUND_TO_PAGES(size));
     GuiAddLogMessage(msg);
-    err = uc_mem_map(uc, aligned_address, ROUND_TO_PAGES(total_size), UC_PROT_ALL);
+    err = uc_mem_map(uc, aligned_address, ROUND_TO_PAGES(size), UC_PROT_ALL);
     if (err != UC_ERR_OK)
     {
         memset(msg, 0, 256);
@@ -370,7 +370,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
         GuiAddLogMessage("Memory map failed for code");
         return false;
     }
-
+/*
     char *filler = (char*)malloc(filler_size);
     memset(filler, 0x90, filler_size);
     //filler for code
@@ -382,11 +382,12 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
         return false;
     }
     //write code
-    err = uc_mem_write(uc, aligned_address + filler_size, data, size);
+    __debugbreak();
+    */
+    err = uc_mem_write(uc, aligned_address, data, size);
     if (err != UC_ERR_OK)
     {
         GuiAddLogMessage("writing code failed");
-        free(filler);
         return false;
     }
 
@@ -397,6 +398,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
         return false;
     }
 
+    __debugbreak();
     // STARRRRTTTT
     err = uc_emu_start(uc, start_address, start_address + size, 0, 0);
     if (err != UC_ERR_OK)
