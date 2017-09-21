@@ -3,7 +3,8 @@
 #include <windows.h>
 
 
-#define UC_PAGE_SIZE	0x1000
+#define UC_PAGE_SIZE	0x4000
+#define PAGE_SIZE       0x1000
 #define PAGE_SHIFT              (12)
 #define PAGE_ALIGN(Va)          ((ULONG_PTR)((ULONG_PTR)(Va) & ~(UC_PAGE_SIZE - 1)))
 #define BYTES_TO_PAGES(Size)    (((Size) >> PAGE_SHIFT) + (((Size) & (UC_PAGE_SIZE - 1)) != 0))

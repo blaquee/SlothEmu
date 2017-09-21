@@ -317,6 +317,9 @@
     <ClInclude Include="EmuDumps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EmuBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="pluginsdk\x32bridge.lib">
@@ -397,6 +400,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EmuDumps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EmuBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

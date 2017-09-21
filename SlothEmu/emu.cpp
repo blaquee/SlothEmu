@@ -245,10 +245,10 @@ bool EmuSetupRegs(uc_engine* uc, Cpu* cpu)
     regWrite(UC_X86_REG_ESP, cpu->getCSP());
 #endif
 
-    regWrite(UC_X86_REG_GS, cpu->getGS());
-    regWrite(UC_X86_REG_CS, cpu->getCS());
-    regWrite(UC_X86_REG_FS, cpu->getFS());
-    regWrite(UC_X86_REG_SS, cpu->getSS());
+    //regWrite(UC_X86_REG_GS, cpu->getGS());
+    //regWrite(UC_X86_REG_CS, cpu->getCS());
+    //regWrite(UC_X86_REG_FS, cpu->getFS());
+    //regWrite(UC_X86_REG_SS, cpu->getSS());
     return true;
 }
 
@@ -339,10 +339,10 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
     auto stack_aligned = PAGE_ALIGN(stack_addr);
 
     memset(msg, 0, 256);
-    sprintf_s(msg, "Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, PAGE_ALIGN(slimit));
+    sprintf_s(msg, "Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, slimit);
     GuiAddLogMessage(msg);
     //_plugin_logprintf("Aligned stack address: %X\nAligned Limit: %X\n", stack_aligned, BYTES_TO_PAGES(slimit));
-    err = uc_mem_map(uc, stack_aligned, PAGE_ALIGN(slimit), UC_PROT_READ | UC_PROT_WRITE);
+    err = uc_mem_map(uc, stack_aligned, slimit, UC_PROT_READ | UC_PROT_WRITE);
     if (err != UC_ERR_OK)
     {
         memset(msg, 0, 256);
@@ -398,7 +398,7 @@ bool EmulateData(uc_engine* uc, const unsigned char* data, size_t size, duint st
         return false;
     }
 
-    __debugbreak();
+    //__debugbreak();
     // STARRRRTTTT
     err = uc_emu_start(uc, start_address, start_address + size, 0, 0);
     if (err != UC_ERR_OK)

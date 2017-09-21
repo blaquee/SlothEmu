@@ -54,6 +54,14 @@ typedef struct _STACKINFO
 	duint limit;
 }STACKINFO, *PSTACKINFO;
 
+
+typedef struct _MAPPER
+{
+    duint addr;
+    size_t len;
+    bool mapped;
+}MAPPER, *PMAPPER;
+
 // Work on this later
 /*
 namespace engine
